@@ -3,6 +3,6 @@
 /bin/**
 /build/**
 .project
-.metadata
+*/.metadata
 .classpath
 .settings/
