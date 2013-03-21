@@ -17,7 +17,7 @@ public class Driver {
 
 		// Enter the query string "Cheese"
 		WebElement query = driver.findElement(By.name("q"));
-		query.sendKeys("italy trip");
+		query.sendKeys("italy flight");
 
 		// Sleep until the div we want is visible or 5 seconds is over
 		long end = System.currentTimeMillis() + 5000;
@@ -38,5 +38,8 @@ public class Driver {
 		for (WebElement suggestion : allSuggestions) {
 			System.out.println(suggestion.getText());
 		}
+		
+		WebElement ads = driver.findElement(By.id("tads"));
+		
 	}
 }
