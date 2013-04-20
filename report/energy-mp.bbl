@@ -1,0 +1,34 @@
+\begin{thebibliography}{1}
+
+\bibitem{coordinated-cmp}
+V.~Devadas and H.~Aydin.
+\newblock Coordinated power management of periodic real-time tasks on chip
+  multiprocessors.
+\newblock In {\em International Conference on Green Computing}, 2010.
+
+\bibitem{wfd}
+A.~Kandhalu, J.~Kim, K.~Lakshmanan, and R.~Rajkumar.
+\newblock Energy-aware partitioned fixed-priority scheduling for chip
+  multi-processors.
+\newblock In {\em Embedded and Real-Time Computing Systems and Applications},
+  2011.
+
+\bibitem{linuxrk}
+S.~Oikawa and R.~Rajkumar.
+\newblock Linux/rk: A portable resource kernel in linux.
+\newblock In {\em In 19th IEEE Real-Time Systems Sumposium}, 1998.
+
+\bibitem{rk1}
+R.~Rajkumar, K.~Juvva, A.~Molano, and S.~Oikawa.
+\newblock Resource kernels: A resource-centric approach to real-time and
+  multimedia systems.
+\newblock In {\em Proceedings of the SPIE/ACM Conference on Multimedia
+  Computing and Networking}, 1998.
+
+\bibitem{sys-clock}
+S.~Saewong and R.~Rajkumar.
+\newblock Practical voltage-scaling for fixed-priority rt-systems.
+\newblock In {\em Real-Time and Embedded Technology and Applications Symposium,
+  IEEE}, 2003.
+
+\end{thebibliography}
