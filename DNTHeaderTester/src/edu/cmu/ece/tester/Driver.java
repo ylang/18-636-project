@@ -46,8 +46,7 @@ public class Driver {
 		for (WebElement suggestion : allSuggestions) {
 			System.out.println(suggestion.getText());
 		}
-		
+
 		WebElement ads = driver.findElement(By.id("tads"));
-		
 	}
 }
