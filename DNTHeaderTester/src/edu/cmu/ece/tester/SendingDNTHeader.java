@@ -1,9 +1,11 @@
 package edu.cmu.ece.tester;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,10 +19,31 @@ import org.apache.http.message.BasicHeader;
 public class SendingDNTHeader {
 	
 	public static void main(String[] args) {
-		List<String> urlList = getURLsFromFile();
-		for (String url : urlList) {
-			System.out.printf("%s\t%s\n", url, sendGet(url));
+		
+		List<String> urlList = getURLsFromFile("../popular.txt");
+		File outputFile = new File("output.txt");
+		if (outputFile.exists()) {
+			outputFile.delete();
 		}
+		try {
+			outputFile.createNewFile();
+			PrintWriter pw = new PrintWriter(outputFile);
+			int counter = 1;
+			for (String url : urlList) {
+				pw.printf("%s\t%s\n", url, sendGet(url));
+				pw.flush();
+				System.out.printf("%d\t%s\t%s\n", counter ++, url, sendGet(url));
+			}
+			pw.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.err.println("Cannot create an output file");
+			System.exit(-1);
+		}
+		
+		
+		//String url = "http://www.twitter.com";
+		//System.out.printf("%s\t%s\n", url, sendGet(url));
 	}
 	
 	public static List<String> getURLsFromFile(String fileName) {
@@ -58,18 +81,26 @@ public class SendingDNTHeader {
 		get.addHeader(new BasicHeader("User-Agent", "Mozilla/5.0 (X11; Linux i686) AppleWebKit/537.22 (KHTML, like Gecko) Chrome/25.0.1364.160 Safari/537.22"));
 		//DNT Header
 		get.addHeader(new BasicHeader("DNT", "1"));
+		for (Header header: get.getAllHeaders()) {
+			//System.out.println(header.toString());
+		}
 		
+		//System.out.println("Send request ============================>");
 		try {
 			HttpResponse response = client.execute(get);
+			int status = response.getStatusLine().getStatusCode();
+			if (status != 200) {
+				return "STATUS " + status;
+			}
 			Header[] headers = response.getAllHeaders();
 			for (Header header: headers) {
-				System.out.println(header.toString());
+				//System.out.println(header.toString());
 			}
-			String dnt = response.getFirstHeader("DNT").getValue();
-			if (dnt == null || dnt.length() == 0) {
+			Header dntHeader = response.getFirstHeader("DNT");
+			if (dntHeader == null || dntHeader.getValue().length() == 0) {
 				return "NOT SUPPORT";
 			} else {
-				return dnt;
+				return dntHeader.getValue();
 			}
 		} catch (IOException e) {
 			System.err.println(e.getLocalizedMessage());
