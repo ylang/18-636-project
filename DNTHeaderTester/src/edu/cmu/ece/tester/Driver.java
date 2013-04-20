@@ -8,13 +8,21 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
 
 public class Driver {
+	
+	private static String USER_EMAIL = "email_here";
+	private static String USER_PASSWORD = "password_here";
+	
 	public static void main(String[] args) {
 		// The Firefox driver supports javascript
 		WebDriver driver = new FirefoxDriver();
 
 		// Go to the Google Suggest home page
-		driver.get("http://www.google.com/webhp?complete=1&hl=en");
-
+		driver.get("http://www.twitter.com");
+		driver.findElement(By.id("signin-email")).clear();
+		driver.findElement(By.id("signin-email")).sendKeys(USER_EMAIL);
+		driver.findElement(By.id("signin-password")).clear();
+		driver.findElement(By.id("signin-password")).sendKeys(USER_PASSWORD);
+		driver.findElement(By.className("submit btn primary-btn flex-table-btn js-submit")).click();
 		// Enter the query string "Cheese"
 		WebElement query = driver.findElement(By.name("q"));
 		query.sendKeys("italy flight");
