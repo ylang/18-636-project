@@ -1,16 +1,12 @@
 package edu.cmu.ece.tester;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-
-import org.apache.commons.io.FileUtils;
-import org.openqa.selenium.By;
-import org.openqa.selenium.OutputType;
-import org.openqa.selenium.TakesScreenshot;
+import org.browsermob.core.har.Har;
+import org.browsermob.proxy.ProxyServer;
+import org.openqa.selenium.Proxy;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.remote.CapabilityType;
+import org.openqa.selenium.remote.DesiredCapabilities;
 
 
 public class Driver {
@@ -18,8 +14,32 @@ public class Driver {
 	private static String USER_EMAIL = "email_here";
 	private static String USER_PASSWORD = "password_here\n";
 	
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws Exception {
+		// start the proxy
+		ProxyServer server = new ProxyServer(14444);
+		server.start();
+
+		// get the Selenium proxy object
+		Proxy proxy = server.seleniumProxy();
+
+		// configure it as a desired capability
+		DesiredCapabilities capabilities = new DesiredCapabilities();
+		capabilities.setCapability(CapabilityType.PROXY, proxy);
+
+		// start the browser up
+		WebDriver driver = new FirefoxDriver(capabilities);
+
+		// create a new HAR with the label "yahoo.com"
+		server.newHar("yahoo.com");
+
+		// open yahoo.com
+		driver.get("http://yahoo.com");
+
+		// get the HAR data
+		Har har = server.getHar();
+		har.writeTo(System.out);
 		// The Firefox driver supports javascript
+		/*
 		WebDriver driver = new FirefoxDriver();
 
 		// Go to the Google Suggest home page
@@ -54,5 +74,6 @@ public class Driver {
 		}
 
 		WebElement ads = driver.findElement(By.id("tads"));
+		*/
 	}
 }
