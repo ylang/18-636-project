@@ -8,7 +8,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class SendingDNTHeaderManager implements Runnable {
-	private final int MAX_THREAD_NUMBER = 10;
+	private final int MAX_THREAD_NUMBER = 1000;
 	private ExecutorService pool;
 	private String fileName;
 	private SendingDNTHeaderFileWriter writer;

@@ -69,7 +69,6 @@ public class SendingDNTHeaderWorker implements Runnable {
 		} catch (IOException e) {
 			System.err.println(e.getLocalizedMessage());
 			e.printStackTrace();
-			System.exit(42);
 			return "ERROR";
 		}
 	}
