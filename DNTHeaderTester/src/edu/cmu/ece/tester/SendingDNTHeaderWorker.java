@@ -10,9 +10,10 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicHeader;
 
-public class SendingDNTHeaderWorker implements Runnable{
+public class SendingDNTHeaderWorker implements Runnable {
 	private String url;
 	private SendingDNTHeaderFileWriter writer;
+
 	public SendingDNTHeaderWorker(String url, SendingDNTHeaderFileWriter writer) {
 		this.url = url;
 		this.writer = writer;
@@ -21,9 +22,10 @@ public class SendingDNTHeaderWorker implements Runnable{
 	@Override
 	public void run() {
 		writer.output(url, this.sendGet(this.url));
-		
+
 	}
-	public synchronized String sendGet(String url) {
+	
+	public String sendGet(String url) {
 		HttpClient client = new DefaultHttpClient();
 		HttpGet get = new HttpGet(url);
 		// Accept:text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
@@ -43,9 +45,9 @@ public class SendingDNTHeaderWorker implements Runnable{
 				"Mozilla/5.0 (X11; Linux i686) AppleWebKit/537.22 (KHTML, like Gecko) Chrome/25.0.1364.160 Safari/537.22"));
 		// DNT Header
 		get.addHeader(new BasicHeader("DNT", "1"));
-//		for (Header header : get.getAllHeaders()) {
-//			// System.out.println(header.toString());
-//		}
+		// for (Header header : get.getAllHeaders()) {
+		// // System.out.println(header.toString());
+		// }
 
 		// System.out.println("Send request ============================>");
 		try {
@@ -54,10 +56,10 @@ public class SendingDNTHeaderWorker implements Runnable{
 			if (status != 200) {
 				return "STATUS " + status;
 			}
-//			Header[] headers = response.getAllHeaders();
-//			for (Header header : headers) {
-//				// System.out.println(header.toString());
-//			}
+			// Header[] headers = response.getAllHeaders();
+			// for (Header header : headers) {
+			// // System.out.println(header.toString());
+			// }
 			Header dntHeader = response.getFirstHeader("DNT");
 			if (dntHeader == null || dntHeader.getValue().length() == 0) {
 				return "NOT SUPPORT";

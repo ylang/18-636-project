@@ -1,4 +1,4 @@
-package edu.cmu.ece.tester;
+package edu.cmu.ece.selenium;
 
 import java.io.File;
 import java.util.ArrayList;
