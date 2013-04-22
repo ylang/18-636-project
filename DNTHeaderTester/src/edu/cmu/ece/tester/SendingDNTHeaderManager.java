@@ -8,19 +8,19 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class SendingDNTHeaderManager implements Runnable {
+	private final int MAX_THREAD_NUMBER = 1;
 	private ExecutorService pool;
 	private String fileName;
 	private SendingDNTHeaderFileWriter writer;
-	private int maxThread;
+	private int numberOfUrls;
 	
-	public SendingDNTHeaderManager(int maxThread, String fileName, SendingDNTHeaderFileWriter writer) {
-		this.pool = Executors.newFixedThreadPool(maxThread);
+	public SendingDNTHeaderManager(int numberOfUrls, String fileName, SendingDNTHeaderFileWriter writer) {
+		this.pool = Executors.newFixedThreadPool(this.MAX_THREAD_NUMBER);
 		this.fileName = fileName;
 		this.writer = writer;
-		this.maxThread = maxThread;
+		this.numberOfUrls = numberOfUrls;
 	}
 	
-
 	@Override
 	public void run() {
 			FileReader fr = null;
@@ -32,7 +32,7 @@ public class SendingDNTHeaderManager implements Runnable {
 			}
 			BufferedReader br = new BufferedReader(fr);
 			String line = null;
-			for (long i = 0; i < 1000; i ++) {
+			for (long i = 0; i < numberOfUrls; i ++) {
 				try {
 					if (i != 0) {
 						pool.execute(new SendingDNTHeaderWorker(line, writer));
@@ -40,7 +40,7 @@ public class SendingDNTHeaderManager implements Runnable {
 					line = br.readLine();
 				} catch (IOException e) {
 					e.printStackTrace();
-					i --;
+					//i --;
 				}
 			}
 			pool.shutdown();
@@ -49,7 +49,6 @@ public class SendingDNTHeaderManager implements Runnable {
 	
 	public static void main (String args[]) throws IOException {
 		SendingDNTHeaderFileWriter wr = new SendingDNTHeaderFileWriter("output.txt");
-		SendingDNTHeaderManager manager = new SendingDNTHeaderManager(1000, "../popular.txt", wr);
-		manager.run();
+		(new Thread(new SendingDNTHeaderManager(100, "../popular.txt", wr))).start();
 	}
 }

@@ -23,6 +23,7 @@ public class SendingDNTHeaderWorker implements Runnable{
 		
 	}
 	public String sendGet(String url) {
+		System.out.println("url = " + url);
 		HttpClient client = new DefaultHttpClient();
 		HttpGet get = new HttpGet(url);
 		// Accept:text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
