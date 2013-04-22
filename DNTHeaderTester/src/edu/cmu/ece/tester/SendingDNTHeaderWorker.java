@@ -1,6 +1,7 @@
 package edu.cmu.ece.tester;
 
 import java.io.IOException;
+import java.util.Scanner;
 
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
@@ -22,8 +23,7 @@ public class SendingDNTHeaderWorker implements Runnable{
 		writer.output(url, this.sendGet(this.url));
 		
 	}
-	public String sendGet(String url) {
-		System.out.println("url = " + url);
+	public synchronized String sendGet(String url) {
 		HttpClient client = new DefaultHttpClient();
 		HttpGet get = new HttpGet(url);
 		// Accept:text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
@@ -67,6 +67,7 @@ public class SendingDNTHeaderWorker implements Runnable{
 		} catch (IOException e) {
 			System.err.println(e.getLocalizedMessage());
 			e.printStackTrace();
+			System.exit(42);
 			return "ERROR";
 		}
 	}

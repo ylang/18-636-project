@@ -8,11 +8,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class SendingDNTHeaderManager implements Runnable {
-	private final int MAX_THREAD_NUMBER = 1;
+	private final int MAX_THREAD_NUMBER = 10;
 	private ExecutorService pool;
 	private String fileName;
 	private SendingDNTHeaderFileWriter writer;
-	private int numberOfUrls;
+	private long numberOfUrls;
 	
 	public SendingDNTHeaderManager(int numberOfUrls, String fileName, SendingDNTHeaderFileWriter writer) {
 		this.pool = Executors.newFixedThreadPool(this.MAX_THREAD_NUMBER);
@@ -32,9 +32,9 @@ public class SendingDNTHeaderManager implements Runnable {
 			}
 			BufferedReader br = new BufferedReader(fr);
 			String line = null;
-			for (long i = 0; i < numberOfUrls; i ++) {
+			for (long i = 0L; i < numberOfUrls; i ++) {
 				try {
-					if (i != 0) {
+					if (i != 0L) {
 						pool.execute(new SendingDNTHeaderWorker(line, writer));
 					}
 					line = br.readLine();
@@ -49,6 +49,6 @@ public class SendingDNTHeaderManager implements Runnable {
 	
 	public static void main (String args[]) throws IOException {
 		SendingDNTHeaderFileWriter wr = new SendingDNTHeaderFileWriter("output.txt");
-		(new Thread(new SendingDNTHeaderManager(100, "../popular.txt", wr))).start();
+		(new Thread(new SendingDNTHeaderManager(100000, "../popular.txt", wr))).start();
 	}
 }
