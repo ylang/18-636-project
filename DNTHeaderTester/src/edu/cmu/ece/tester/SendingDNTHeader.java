@@ -103,7 +103,7 @@ public class SendingDNTHeader {
 			if (dntHeader == null || dntHeader.getValue().length() == 0) {
 				return "NOT SUPPORT";
 			} else {
-				return dntHeader.getValue();
+				return dntHeader.getValue() + " SUPPORT";
 			}
 		} catch (IOException e) {
 			System.err.println(e.getLocalizedMessage());
