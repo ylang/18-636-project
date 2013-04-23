@@ -48,7 +48,7 @@ public class SendingDNTHeaderManager implements Runnable {
 	}
 	
 	public static void main (String args[]) throws IOException {
-		SendingDNTHeaderFileWriter wr = new SendingDNTHeaderFileWriter("output.txt");
+		SendingDNTHeaderFileWriter wr = new SendingDNTHeaderFileWriter("output_10k.txt");
 		(new Thread(new SendingDNTHeaderManager(100000, "../popular.txt", wr))).start();
 	}
 }
