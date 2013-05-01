@@ -17,8 +17,8 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class Driver {
 
-	private static String USER_EMAIL = "langyuze@hotmail.com";
-	private static String USER_PASSWORD = "900913\n";
+	private static String USER_EMAIL = "facebookpwdcracking@gmail.com";
+	private static String USER_PASSWORD = "18636test\n";
 
 	public static void main(String[] args) throws Exception {
 		/*
