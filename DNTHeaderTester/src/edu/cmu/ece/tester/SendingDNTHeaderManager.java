@@ -10,7 +10,7 @@ import java.util.concurrent.Executors;
 public class SendingDNTHeaderManager implements Runnable {
 	public static final String OUTPUT_FILE = "output_detailed_100.txt";
 	public static final String INPUT_FILE = "detailed_link_100.txt";
-	public static final int INPUT_COUNT = 5756;
+	public static final int INPUT_COUNT = 5946;
 
 	private final int MAX_THREAD_NUMBER = 1000;
 	private ExecutorService pool;

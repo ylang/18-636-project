@@ -5,6 +5,11 @@
 \usepackage{microtype}
 \usepackage{booktabs}
 \usepackage{upquote}
+\usepackage{url}
+\usepackage{algpseudocode}
+\usepackage{algorithm}
+
+
 %\hyphenation{brow-ser brow-sers tra-dit-ion-al ja-va-script Web-Kit}
 \begin{document}
 \CopyrightYear{2013}
@@ -62,7 +67,11 @@ In this section, we would like introduce in detail about several background conc
 
 \subsection*{Online Behavioral Advertising}
 
+\todo{ruoyul: add OBA}
+
 \subsection*{Do Not Track}
+
+\todo{ruoyul: add DNT}
 
 \subsection*{Browser Behavior} \label{sec:browserbehavior}
 
@@ -90,17 +99,104 @@ We measured these requirements on mainstream browsers and found most of them ful
 
 
 \section{Inspiring work} \label{sec:lorrie}
-In this section, we present which original work is our research study inspired by. Generally, our research project is inspired by Lorrie \emph{et al} ~\cite{balebako2012measuring}. Our original idea is to reproduce their experiment and expend on more topics, more target websites and across platform. After going through a detailed study on that research, we then analyze the value and success of their experiment. However, there is also a limitation. We finally adjust our goal to make the similar experiment more meaningful and accurate.
+
+In this section, we present the original work which inspires and directs our research study. Generally, our research project is inspired by Lorrie \emph{et al} ~\cite{balebako2012measuring}. Our original idea is to reproduce their experiment and expend on more topics, more target websites and across platform. After going through a detailed study on that research, we then analyze the value and success of their experiment. However, there is also a limitation. We finally adjust our goal to make the similar experiment more meaningful and accurate.
+
+Lorrie Faith Cranor \emph{et al} did a research study in 2012 on \emph{measuring effectiveness of privacy tools for limiting behavioral advertising}~\cite{balebako2012measuring}. In that research, the authors tested on several web privacy protection tools, including tools provided by Network Advertising Initiative (NAI) and Digital Advertising Alliance (DAA) to opt-out tailored advertisement with partner companies and websites, blocking third party cookies and Do Not Track, on their effectiveness of protecting user privacy. Their methodology to detect if the privacy is leaked by generating some browsing histories about a specific topic, such as digital camera, and then visit several selected websites, which contain online behavioral advertisements, to compare the similarity of the text shows up in the advertisement and their original topic. If those ads are contrastively similar to the topic, there is certain possible that privacy is leaked to third party trackers.
+
+Their testing advertisement network is Google text ads only. Their topics are "travel", "wedding ", "bicyle", "camera", "pregenacy", and no training, which means there is no browsing history generated. Their target websites, which contains Google text ads, contains popular news websites such as cnn.com and howstuffworks.com. There are totally 5 target websites in their study.
+
+Based on their experiment, Do Not Track is the only one among those tested tools that does not effectively limiting online behavioral advertising, which means it does not protect user privacy well. But they also mentioned that Google text ads will support Do Not Track in later 2012.
+
+This makes us feel very interested and curious. First of all, up to now (April 2013), does Google text ads support Do Not Track yet? Secondly, since Do Not Track is proposed for almost 4 years, does it work better? Here, working better means there are more networks respecting Do Not Track politely. Also, is there any update on the design of Do Not Track?
+
+We start our research study with those questions. Our original idea is to expend the experiment did by Lorrie \emph{et al} on more topics and more target websites, even across browsers and platforms. However, there are several limitation on the original study that we are expecting to make improve on. As they mentioned, their study is only targeting on Google text ads~\cite{balebako2012measuring}, but there are several more major advertisement platform. This is caused by the difficulties on comparing the similarity of two web contents. If the web advertisement contains an image or flash, it is extremely hard to compare the its similarity to a specific natural language word in a scientific way. Also, the experiment could be improved for higher pertinence. Because Google never declared to support Do Not Track, or even claimed to not support Do Not Track~\cite{rsa2013}, there is not very meaningful to test on compliance of a service that never commit to comply. 
+
+We propose our experiment as a more targeting one compared to be Lorrie \emph{et al} study. We would like to testing the server-side compliance of Do Not Track on those websites, companies, advertisement platform and networks who declared to respect Do Not Track. However, we might lose accuracy on the judgment stage and representativeness on selecting targets as a trade off. Although ideally we would like to choose those DNT friendly targets, but they might only holding a very small market share and cannot represent the whole market.
 
 \section{DNT Friendly Services} \label{sec:services}
 
 In this section, we present our attempt on revealing the list of Do Not Track friendly services and network. To test on the companies who claimed to support Do Not Track, we firstly have to find them. This is not an easy work. Although many companies would include their actions regard on Do Not Track in their privacy policies, it is not feasible to read through all those policies of all popular websites. We did an experiment by ourself on the point that servers which support Do Not Track are recommended to include DNT HTTP header in the HTTP response header field~\cite{dntdraft}. Then we also learned on a partial explicit list of companies supporting Do Not Track provided by W3C public-tracking team.
 
-\subsection{DNT Header in Response}
+\subsection{Discover DNT Friendly Web Services}
 
-\subsection{Methodology to Discover DNT Friendly Web Services}
+\paragraph{DNT Header in Response}
+We firstly did not find any explicit list of websites, services and networks who support Do Not Track. As defined in draft~\cite{dntdraft}, a server which supports Do Not Track is recommended to echo a \verb|DNT: 1| HTTP header back to user when it receives HTTP request with a \verb|DNT: 1| header in the HTTP header field. We are advised to discover the DNT Friendly list by ourselves.
+
+\paragraph{Crawling gate websites}
+Thus we did a stepping-out experiment to collect websites who support Do Not Track. Our algorithm is presented in Algorithm~\ref{listdiscover} \todo{ylang: add a algorithm}. The basic idea is to send HTTP requests to all the target URLs. Here, our target URLs are the URLs of top 100,000 popular websites listed by Alexa~\cite{alexa}. For each requests, add regular HTTP headers such as \texttt{User-Agent}, \texttt{Accept-Encoding}, \texttt{Accept-Language}, etc. to simulate a real HTTP request send from browser. A \verb|DNT: 1| header will be added for each request. Send the request to the website and obtain the HTTP response. If the response status code is \verb|200 OK| and there is also a \verb|DNT: 1| header in the response header field, then we will regard this website is supporting Do Not Track.
+
+
+% \begin{algorithm}
+% \caption{<your caption for this algorithm>}\label{listdiscover}
+
+% \begin{algorithmic}
+% \FOREACH {$i=0$ \TO $10$} \DO
+%   \STATE request \GETS new HTTP request to url\\
+%   \STATE add regular HTTP headers to request\\
+%   \STATE add \verb|DNT: 1| HTTP header to request\\
+%   \STATE send request\\ 
+%   \STATE response \GETS response received
+%   \IF response status code is 200 \THEN
+%     \IF response contains header of \verb|DNT: 1| \THEN 
+%       \STATE log url to file marked as  DNT: 1\\ \ENDIF
+%     \IF response contains header of \verb|DNT: 0| \THEN 
+%       \STATE log url to file marked as  DNT: 0\\ \ENDIF
+%     \ELSE
+%       \STATE log url to file marked as NOT SUPPORT  \ENDIF
+%     \ENDIF
+%   \ELSE
+%     \STATE log url to file marked with corresponding status code
+%   \ENDIF
+% \ENDFOR
+% \end{algorithmic}
+% \end{algorithm}
+
+\paragraph{Results}
+We did this on the scale of 100,000 websites using multiple threads and finished in less than 12 hours. Among the results, 88,432 websites are successfully accessed. 88,426 of them did not echo the \verb|DNT: 1| header back. Only 6 of the top 100,000 websites echoed the \verb|DNT: 1| header back. This portion is extremely small. These websites are:
+
+\begin{itemize}
+\item \url{http://answered-questions.com}
+\item \url{http://swoodoo.com}
+\item \url{http://kayak.es}
+\item \url{http://kayak.it}
+\item \url{http://kayak.co.in}
+\item \url{http://kayak.ru}
+\end{itemize}
+
+\url{answered-questions.com} is a web search engine, \url{swoodoo.com} and \url{kayak}is a travel booking website. Different postfix of \url{kayak} is postfixes of national domain. Unfortunately, this does not give any suggestive insight. 
+
+\paragraph{Crawling deeper}
+We then realized that only submitting requests to the gate website does not mean too much. Since many requests sent to third party trackers are embedded on the website page, rather than the direct URL of the website. We modified our list discover program and now we send HTTP request to a website, and inspect all the HTTP traffics generated. We log these generated HTTP requests to a file as the target URLs and repeat the Algorithm~\ref{listdiscover}. Our target websites are top 100 popular websites listed by Alexa~\cite{alexa} with three extra URLs: \url{http://answered-questions.com}, \url{http://swoodoo.com}, \url{http://kayak.es}, since we would like to explore more on these known websites who support Do Not Track on their gate websites.
+
+\paragraph{limitation}
+To discover DNT friendly web services has many limitations. Firstly, to echo \verb|DNT: 1| header back to user is a recommendation rather than requirement. Furthermore, this recommendation is defined in a draft\cite{dntdraft}, rather than a requirement document. We found that tracking-protection team of W3C has raised up an issue doubting to force servers include \verb|DNT: 1| header in response if it support Do Not Track and received a HTTP request with \verb|DNT: 1| header. However, this issue was closed with the result that they should not force the server mirror DNT headers. They only request that DNT HTTP header could not be modified by intermediaries.
+
+Also, due to consideration on legal issues, web companies are advised to not include \verb|DNT :1| header in their responses to avoid any potential legal charge, even though they are respecting Do Not Track. This is an interesting fact for us. We expect this timid action would be continuing until a comparative stabled agreement of Do Not Track is finalized and accepted by each party involved in online behavioral advertising market.
 
 \subsection{Partial List Provided by Public-tracking Team}
+
+After several failing attempted, we were advised to contact public-tracking team of W3C. The public-tracking team is currently working on building an agreement of Do Not Track. We are provided a partial list of DNT supporting web services. In this partial list, there are 20 network services. They can be divided into 5 groups:
+\begin{itemize}
+\item \textbf{analytic services}, such as adInsight
+\item \textbf{advertisement platform}, such as Chitika and AdOcean
+\item \textbf{data provider}, such as AdTruth and m6d
+\item \textbf{tag management}, such as BrightTag
+\item \textbf{social network}, such as Twitter
+\end{itemize}
+
+We are very interested in those advertisement platforms since they are the major companies who benefited by online behavioral tracking and online behavioral advertising technology. To test on those advertisement platforms also keeps consistency with our original requirement and thought.
+
+To test on those advertisement platforms, we have to reproduce the Lorrie \emph{et al} study, by replacing target websites by those websites embedded advertisements provided those advertisement platforms. Unfortunately, after several approach, we found this is infeasible in reality. It might still be able to discover a very small portion of those placements, but can hardly scaled up.
+
+Here is the reason. None of those advertisement platform company would like to post their placement target websites on their websites. Thus for us, we cannot easily fount the target websites by the information provided by those company websites. There might be a way to discover there the ads are placed by purchasing an advertisement place provided by them. However, due to th context that this is a course project, we do not have budget to implement this. Also, this is not a scalable way. Another potential approach is to crawling a large amount of popular websites and log all traffics generated. Comparing either the URL or content to make educational guesses on detecting the placements. This also requires a powerful machine and long time period. Moreover, the URL of a advertisement block does not have to be as the same, or even similar, to the URL of the company website, which makes this more like impossible.
+
+There are also several advertisement platforms, such as MediaMind and Jumptap, who are targeting on mobile and tablet devices, embedded into mobile web and native applications. This makes the measurement even more difficult and infeasible.
+
+\subsection{Twitter}
+
+Although the partial list does not provided much valuable suggestions, the only social network who supports Do Not Track, Twitter, still makes us feel interested.
+
 
 \section{Experiment} \label{sec:experiment}
 
