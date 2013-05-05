@@ -7,7 +7,11 @@ import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class SendingDNTHeaderManager {
+public class SendingDNTHeaderManager implements Runnable {
+	public static final String OUTPUT_FILE = "output_detailed_100.txt";
+	public static final String INPUT_FILE = "detailed_link_100.txt";
+	public static final int INPUT_COUNT = 5756;
+
 	private final int MAX_THREAD_NUMBER = 1000;
 	private ExecutorService pool;
 	private String fileName;
@@ -22,7 +26,8 @@ public class SendingDNTHeaderManager {
 		this.numberOfUrls = numberOfUrls;
 	}
 
-	public void go() {
+	@Override
+	public void run() {
 		FileReader fr = null;
 		try {
 			fr = new FileReader(fileName);
@@ -49,9 +54,10 @@ public class SendingDNTHeaderManager {
 
 	public static void main(String args[]) throws IOException {
 		SendingDNTHeaderFileWriter wr = new SendingDNTHeaderFileWriter(
-				"output.txt");
-		SendingDNTHeaderManager m = new SendingDNTHeaderManager(100000,
-				"../popular.txt", wr);
-		m.go();
+				SendingDNTHeaderManager.OUTPUT_FILE);
+		(new Thread(new SendingDNTHeaderManager(
+				SendingDNTHeaderManager.INPUT_COUNT,
+				edu.cmu.ece.selenium.InternetLinksGetter.OUTPUT_FILE, wr)))
+				.start();
 	}
 }

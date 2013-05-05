@@ -17,8 +17,8 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class Driver {
 
-	private static String USER_EMAIL = "langyuze@hotmail.com";
-	private static String USER_PASSWORD = "900913\n";
+	private static String USER_EMAIL = "facebookpwdcracking@gmail.com";
+	private static String USER_PASSWORD = "18636test\n";
 
 	public static void main(String[] args) throws Exception {
 		/*
@@ -104,7 +104,16 @@ public class Driver {
 				.getScreenshotAs(OutputType.FILE);
 		// Now you can do whatever you need to do with it, for example copy
 		// somewhere
-		FileUtils.copyFile(scrFile, new File("screenshot.png"));
+		FileUtils.copyFile(scrFile, new File("screenshot_twitter.png"));
+		// driver.close();
+		driver.get("https://twitter.com/who_to_follow/web_personalized");
+		scrFile = ((TakesScreenshot) driver)
+				.getScreenshotAs(OutputType.FILE);
+		// Now you can do whatever you need to do with it, for example copy
+		// somewhere
+		FileUtils.copyFile(scrFile, new File("screenshot_twitter_tailored.png"));
+		// driver.close();
+		driver.get("http://ie.microsoft.com/testdrive/browser/donottrack/");
 		// driver.close();
 	}
 }

@@ -1,0 +1,135 @@
+\documentclass{sig-alternate}
+\usepackage{url}
+\usepackage{verbatim}
+\usepackage[utf8]{inputenc}
+\usepackage{microtype}
+\usepackage{booktabs}
+\usepackage{upquote}
+%\hyphenation{brow-ser brow-sers tra-dit-ion-al ja-va-script Web-Kit}
+\begin{document}
+\CopyrightYear{2013}
+\clubpenalty=10000
+\widowpenalty=10000
+
+\title{Measuring Server-side Compliance of Do Not Track}
+\numberofauthors{2}
+\author{
+\alignauthor
+Yuze Lang\\
+      \affaddr{Carnegie Mellon University}\\
+      \affaddr{ylang@andrew.cmu.edu}
+\alignauthor
+Ruoyu Li\\
+      \affaddr{Carnegie Mellon University}\\
+      \affaddr{ruoyul@andrew.cmu.edu}
+}
+
+\newcommand{\todo}[1]{\textbf{[TODO: #1]}}
+
+\maketitle
+\begin{abstract}
+\todo{add abstract}
+\end{abstract}
+
+\terms{Privacy}
+
+\keywords{DNT, Third Party Tracking, Online Behavioral Advertising}
+
+\section{Introduction}\label{sec:intro}
+Online behavioral advertising (OBA)~\cite{sheltononline} is a type of targeted advertising, by which companies track consumers’ online activities to target them for digital advertising directed at their specific interests. Web users could easily see targeted advertisement in embedded block on their browsing websites because of this technique. For instance, a user might able to see several advertisement about "Cheap flight to Italy" after searching on search engine with key work "European trip" and visited several results listed. This is because when the user visit several websites contains DOM element which will send HTTP request to third party tracker. By reading and setting cookie, the third party tracker will be able to track the user's browser history, thus classify the user with interests.
+
+This technique seems to be beneficial for both advertisement publishers and advertisement platform, since publishers are able to push their advertisements to fewer but more accurate targets, and advertisement platform, who has the ability to classify targets, will attract more publishers to use their network. It even might be non-harmful since ideally, users are supposed to see those advertisements that is helpful for them specifically. However, privacy concern could be raised. Web users are being tracked: their browsing history is logged into third party companies' database without any awareness. Their interests, hobbies, even recent plans would be released to those trackers. This kind of tracking is blind to the willingness of users. I.e., when if the user does not want to be tracked, unless to reject all third party cookies, there is no good way to disallow the tracker.
+
+The concept of \emph{Do Not Track} (DNT)~\cite{tschofenignot} was firstly proposed and prototyped in 2009 by researcher Christopher Soghoian, Sid Stamm, and Dan Kaminsky on Firefox web browser~\cite{wikidnt}. DNT is proposed to be an HTTP request header in HTTP request header field send along HTTP requests. It is a protocol that presents the unwillingness of the user to be tracked. Ideally, it requests that a web application disable either its tracking or cross-site user tracking of an individual user.
+
+Due to the concept of \emph{Do Not Track} and its implementation, there are no technical enforcement mechanisms built-in~\cite{tschofenignot}. Thus there is the question of how users (or more realistically researchers, etc. on behalf of users) detect success or failure to comply. A research project in Carnegie Mellon University did a study on measuring on the effectiveness of of privacy tools limiting behavioral advertising~\cite{balebako2012measuring}. In this study, Do Not Track has been considered as a way to limit behavioral advertising and the measurement on Do Not Track is done by their methodology. The basic idea is to first generated browsing history on a topic key word with and without DNT header, and then browse the website that contains online behavioral advertising. To compare the similarity between the advertisement showed up and the key word, the effectiveness of privacy tool is revealed.
+
+Our study here is inspired by this project and the research paper \emph{Measuring the effectiveness of privacy tools for limiting behavioral advertising}~\cite{balebako2012measuring} written by Lorrie Faith Cranor \emph{et al}. We did a study on the protocol Do Not Track and research by Lorrie \emph{et al}, learned some takeaway and then attempted to measuring the effectiveness of Do Not Track specifically. Here, measuring the effectiveness of Do Not Track is more meaningful to measuring the server-side compliance of Do Not Track, since in the current stage, the web services and networks who claimed to support DNT is limited. To test on those services who does not support DNT is meaningless, and the result would be able to anticipated easily.
+
+We did an experiment similar to the experiment in the study of Lorrie \emph{et al} targeting on DNT supported network services. We exposed more issues and problems both regrading to the Do Not Track itself, and the study. The value of this paper is not limited to a measurement of Do Not Track on companies who claimed to respect Do Not Track, but also revealed several issues and problems on the concept of Do Not Track itself and the methodology of detect success or failure to comply.
+
+In this paper, we introduce the Do Not Track concept, present our experiment methodology and results, and talked about the limitations. The limitations includes the design limitation of the concept, and mainly on the methodology of Lorrie's study and ours. Because of this is a project limited within a course background, we are limited in budget and time. Due to the fact both Do Not Track, which is still in draft stage, and our target sites are updated frequently, results and thesis in this paper is updated up to the current. We anticipate that it could be out of date if the concept of Do Not Track changes.
+
+\paragraph{Organization}
+The rest of this paper is organized as follows. Section~\ref{sec:background} presents some basic concepts related to the study.  Section~\ref{sec:lorrie} describes the Lorrie \emph{et al}'s study, which inspires our research. Section~\ref{sec:services} states the companies who supports Do Not Track. Section~\ref{sec:experiment} describes our experiment procedure. Section~\ref{sec:limitation} discusses some limitation in the study. Section~\ref{sec:conclusion} concludes.
+
+\section{Background} \label{sec:background}
+
+In this section, we would like introduce in detail about several background concepts and knowledges, including \emph{Online Behavioral Tracking}, \emph{Online Behavioral Advertising} and \emph{Do Not Track}. 
+\subsection*{Online Behavioral Tracking}
+
+\todo{ruoyul: add tracking, including how users are tracked, who are the trackers, and basic legal issue}
+
+\subsection*{Online Behavioral Advertising}
+
+\subsection*{Do Not Track}
+
+\subsection*{Browser Behavior} \label{sec:browserbehavior}
+
+Modern mainstream browsers are all supporting Do Not Track up to current. In Firefox 5 or later, user can set \emph{Tell websites I do not want to be tracked}, under privacy tab in preference setting, as enabled to automatically include \texttt{DNT} header in all HTTP requests. Similar settings are available on Chrome 23 or later, Opera 12 or later, and IE 9 or later. For Safari 5.1 or later, Do Not Track setting is hidden under \emph{Development} menu, which will show up only if user enables \emph{Show Develop menu in menu bar}.
+
+After being set enabled to Do Not Track, browsers will include HTTP header \verb|DNT: 1| in all HTTP requests. According to \emph{The Web Tracking Protection} specification~\cite{w3cwtp}, DOM Property method of \verb|document.navigator.doNotTrack == "1"| must return \verb|TRUE|. This allows script to detect and respect user's preference to be not tracked. This feature is supported on Firefox 9 or later, IE 9 or later, Opera 12 or later and Safari 5.1 or later on OS X 10.7 or later. It is not supported by Chrome yet~\cite{navigatordnt}. \todo{DOUBLE CHECK HERE if possible}
+
+\subsection*{Server-side compliance of Do Not Track}
+
+Due to the fact that the design of Do Not Track protocol is a policy protocol rather than a technical limiting bond, compliance of Do Not Track is complicated and abstract. Only the general requirement is defined with no detailed technical specification. This is understandable since different services and networks might achieve the goal by various way. The compliance of a \emph{first party} and a \emph{third party} is different. In general first parties do not need to alter behavior with respect to the header except do not release information to third parties. Third party content elements are supposed to honor the header by declining to set cookies and record user activity on their servers~\cite{donotbeg}.
+
+\paragraph{Compliance of First Party}
+
+In a specific network interaction, a party with which the user intentionally interacts is a \emph{First Party}. In most cases on a traditional web browser, the first party will be the party that owns and operates the domain visible in the address bar~\cite{w3ctrackingcompliance}.When a first party receives a network transaction to which a \verb|DNT: 1| header is attached, first party may engage in its normal collection and use of information. This includes the ability to customize the content, services, and advertising in the context of the first party experience.The first party must not pass information about this transaction to non-service provider third parties who could not collect the data themselves under this standard~\cite{w3ctrackingcompliance}.
+
+\paragraph{Compliance of Third Party}
+
+In a specific network interaction, any entity that is not the user, user agent, or a first party is considered a \emph{third party}~\cite{w3ctrackingcompliance}. When a third party receives a communication to which a DNT:1 header is attached, it must not collect, retain, share, or use information related to that communication outside of the permitted uses. Furthermore, that third party must not share or use information about \emph{previous} communications in which it was a third party, outside of the permitted uses. Permitted uses are including short term collection and use without personalization and transmission, technical using such as debugging, frequency capping, and security prevention, and business using such as financial auditing. Those uses should not include any secondary use or personalization. Data transparency and reasonable security is required~\cite{w3ctrackingcompliance}.
+
+\paragraph{Compliance of User Agent.}
+
+Compliance of Do Not Track is also applicable on user agent. However, the requirements are specified on the control of express a tracking preference. For instance, a user agent must ensure that the tracking preference choices are communicated to users clearly and conspicuously, and shown at the time and place the tracking preference choice is made available to a user. Also, A user agent must not express a tracking preference for a user unless the user has given express and informed consent to indicate a tracking preference~\cite{w3ctrackingcompliance}.
+
+We measured these requirements on mainstream browsers and found most of them fulfill the requirements, except, as mentioned above, Safari hides the setting under Development Menu, which is not shown by default. Since there is merely few performance requirement on user-agent, or client side than on server-side, measuring the effectiveness of Do Not Track is mainly involved on measuring the compliance on server-side. 
+
+
+\section{Inspiring work} \label{sec:lorrie}
+In this section, we present which original work is our research study inspired by. Generally, our research project is inspired by Lorrie \emph{et al} ~\cite{balebako2012measuring}. Our original idea is to reproduce their experiment and expend on more topics, more target websites and across platform. After going through a detailed study on that research, we then analyze the value and success of their experiment. However, there is also a limitation. We finally adjust our goal to make the similar experiment more meaningful and accurate.
+
+\section{DNT Friendly Services} \label{sec:services}
+
+In this section, we present our attempt on revealing the list of Do Not Track friendly services and network. To test on the companies who claimed to support Do Not Track, we firstly have to find them. This is not an easy work. Although many companies would include their actions regard on Do Not Track in their privacy policies, it is not feasible to read through all those policies of all popular websites. We did an experiment by ourself on the point that servers which support Do Not Track are recommended to include DNT HTTP header in the HTTP response header field~\cite{dntdraft}. Then we also learned on a partial explicit list of companies supporting Do Not Track provided by W3C public-tracking team.
+
+\subsection{DNT Header in Response}
+
+\subsection{Methodology to Discover DNT Friendly Web Services}
+
+\subsection{Partial List Provided by Public-tracking Team}
+
+\section{Experiment} \label{sec:experiment}
+
+We did a series of experiments to measuring the server compliance on Do Not Track. The methodology is similar to Lorrie \emph{et al} study, with several adjustment and enhancement compared to their experiment. We also adjust our experiment during the study and reproduce the experiment a few times. The result of the experiment is presented in the last of this section.
+
+\subsection{Methodology}
+
+\subsection{Adjustment}
+
+\subsection{Result}
+
+\section{Limitation} \label{sec:limitation}
+
+The value of this paper is not only the measurement itself, but also several limitations we discovered during our study. Some of these limitations are on the design of the Do Not Track concept; others are on the experiment methodology and implement. There is also a limitation of reality and context of the research study.
+
+\subsection{Do Not Show or Do Not Track}
+
+\subsection{Where is the Ad}
+
+\subsection{Who is the tracker}
+
+\subsection{A Temporary Draft}
+
+\section{Conclusion} \label{sec:conclusion}
+In this section, we review works that inspired us and related to our research study.
+
+\section*{Acknowledgements}
+
+We would like to specially thank Rebecca Balebako, Blase Ur and Aleecia M. McDonald for their time on providing supports and feedbacks to through our research project. We would also thank Collin Jackson, Lin-Shung Huang and Eric Chen for their guidance and useful insights. We would finally thank everyone in the public tracking team of W3C for helping us on solving problems.
+\bibliographystyle{abbrv}
+\bibliography{css}
+\end{document}
