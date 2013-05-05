@@ -104,7 +104,16 @@ public class Driver {
 				.getScreenshotAs(OutputType.FILE);
 		// Now you can do whatever you need to do with it, for example copy
 		// somewhere
-		FileUtils.copyFile(scrFile, new File("screenshot.png"));
+		FileUtils.copyFile(scrFile, new File("screenshot_twitter.png"));
+		// driver.close();
+		driver.get("https://twitter.com/who_to_follow/web_personalized");
+		scrFile = ((TakesScreenshot) driver)
+				.getScreenshotAs(OutputType.FILE);
+		// Now you can do whatever you need to do with it, for example copy
+		// somewhere
+		FileUtils.copyFile(scrFile, new File("screenshot_twitter_tailored.png"));
+		// driver.close();
+		driver.get("http://ie.microsoft.com/testdrive/browser/donottrack/");
 		// driver.close();
 	}
 }
