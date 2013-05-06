@@ -77,7 +77,7 @@ In this section, we would like introduce in detail about several background conc
 
 Modern mainstream browsers are all supporting Do Not Track up to current. In Firefox 5 or later, user can set \emph{Tell websites I do not want to be tracked}, under privacy tab in preference setting, as enabled to automatically include \texttt{DNT} header in all HTTP requests. Similar settings are available on Chrome 23 or later, Opera 12 or later, and IE 9 or later. For Safari 5.1 or later, Do Not Track setting is hidden under \emph{Development} menu, which will show up only if user enables \emph{Show Develop menu in menu bar}.
 
-After being set enabled to Do Not Track, browsers will include HTTP header \verb|DNT: 1| in all HTTP requests. According to \emph{The Web Tracking Protection} specification~\cite{w3cwtp}, DOM Property method of \verb|document.navigator.doNotTrack == "1"| must return \verb|TRUE|. This allows script to detect and respect user's preference to be not tracked. This feature is supported on Firefox 9 or later, IE 9 or later, Opera 12 or later and Safari 5.1 or later on OS X 10.7 or later. It is not supported by Chrome yet~\cite{navigatordnt}. \todo{DOUBLE CHECK HERE if possible}
+After being set enabled to Do Not Track, browsers will include HTTP header \verb|DNT: 1| in all HTTP requests. According to \emph{The Web Tracking Protection} specification~\cite{w3cwtp}, DOM Property method of \verb|document.navigator.doNotTrack == "1"| must return \verb|TRUE|. This allows script to detect and respect user's preference to be not tracked. This feature is supported on Firefox 9 or later, IE 9 or later, Opera 12 or later and Safari 5.1 or later on OS X 10.7 or later. It is not supported by Chrome yet~\cite{navigatordnt}. Furthermore, IE 10 enables Do Not Track by default.~\cite{wikidnt}
 
 \subsection*{Server-side compliance of Do Not Track}
 
@@ -110,7 +110,7 @@ Based on their experiment, Do Not Track is the only one among those tested tools
 
 This makes us feel very interested and curious. First of all, up to now (April 2013), does Google text ads support Do Not Track yet? Secondly, since Do Not Track is proposed for almost 4 years, does it work better? Here, working better means there are more networks respecting Do Not Track politely. Also, is there any update on the design of Do Not Track?
 
-We start our research study with those questions. Our original idea is to expend the experiment did by Lorrie \emph{et al} on more topics and more target websites, even across browsers and platforms. However, there are several limitation on the original study that we are expecting to make improve on. As they mentioned, their study is only targeting on Google text ads~\cite{balebako2012measuring}, but there are several more major advertisement platform. This is caused by the difficulties on comparing the similarity of two web contents. If the web advertisement contains an image or flash, it is extremely hard to compare the its similarity to a specific natural language word in a scientific way. Also, the experiment could be improved for higher pertinence. Because Google never declared to support Do Not Track, or even claimed to not support Do Not Track~\cite{rsa2013}, there is not very meaningful to test on compliance of a service that never commit to comply. 
+We start our research study with those questions. Our original idea is to expend the experiment did by Lorrie \emph{et al} on more topics and more target websites, even across browsers and platforms. However, there are several limitation on the original study that we are expecting to make improve on. As they mentioned, their study is only targeting on Google text ads~\cite{balebako2012measuring}, but there are several more major advertisement platform. This is caused by the difficulties on comparing the similarity of two web contents. If the web advertisement contains an image or flash, it is extremely hard to compare the its similarity to a specific natural language word in a scientific way. Also, the experiment could be improved for higher pertinence. Because Google never declared to support Do Not Track, there is not very meaningful to test on compliance of a service that never commit to comply. 
 
 We propose our experiment as a more targeting one compared to be Lorrie \emph{et al} study. We would like to testing the server-side compliance of Do Not Track on those websites, companies, advertisement platform and networks who declared to respect Do Not Track. However, we might lose accuracy on the judgment stage and representativeness on selecting targets as a trade off. Although ideally we would like to choose those DNT friendly targets, but they might only holding a very small market share and cannot represent the whole market.
 
@@ -167,7 +167,25 @@ We did this on the scale of 100,000 websites using multiple threads and finished
 \url{answered-questions.com} is a web search engine, \url{swoodoo.com} and \url{kayak}is a travel booking website. Different postfix of \url{kayak} is postfixes of national domain. Unfortunately, this does not give any suggestive insight. 
 
 \paragraph{Crawling deeper}
+
 We then realized that only submitting requests to the gate website does not mean too much. Since many requests sent to third party trackers are embedded on the website page, rather than the direct URL of the website. We modified our list discover program and now we send HTTP request to a website, and inspect all the HTTP traffics generated. We log these generated HTTP requests to a file as the target URLs and repeat the Algorithm~\ref{listdiscover}. Our target websites are top 100 popular websites listed by Alexa~\cite{alexa} with three extra URLs: \url{http://answered-questions.com}, \url{http://swoodoo.com}, \url{http://kayak.es}, since we would like to explore more on these known websites who support Do Not Track on their gate websites.
+
+As the result, there are totally 5,945 HTTP request generated and recorded, including those 103 direct HTTP requests sent to the gate websites. Totally 14 HTTP responds included \verb|DNT: 1| in their header field. Besides the direct HTTP requests sent to the gate, some of other HTTP responds are:
+
+\begin{itemize}
+\item \url{http://www.kayak.es/s/sparkle/v582}
+\item \url{http://www.kayak.es/s/sparkle}
+\item \url{http://www.swoodoo.com/s/sparkle}
+\item \url{http://www.swoodoo.com/s/sparkle/v582}
+\item \url{http://cf.addthis.com/red/p.json}
+\item \url{https://d.adroll.com/cm/f/out}
+\end{itemize}
+
+We eliminate some duplicated URLs and similar URLs with different postfix of the domain, or the same domain with different queries. First 4 URLs of the list will results in responses with status code \verb|302 Moved Temporarily|. A URL of log in page to \url{kayak.es} or \url{swoodoo.com} will be included in the \texttt{Location} header respectively. However, they are generated during the traffic on their own websites, which could be defined as a first party.
+
+\url{cf.addthis.com/red/p.json} would return a json file. \url{d.adroll.com/cm/f/out} returns a 2 by 2 all black GIF image. We also discovered that AddThis is a sharing and social data platform, while AdRoll is an advertisement platform, which states themselves as the number one re-targeting platform. They are included by gate websites, thus they can be defined as third parties. We inspected the HTTP request sent to those two URLs, and we can reasonable speculate that they are third party trackers since the content returned by these URLs are meaningless for a web page, and they both include \texttt{Set-Cookie} header with corresponding cookie id and content.
+
+We include our experiment and result targeting these two advertisement platform tracking elements in Section~\ref{sec:experiment}. 
 
 \paragraph{limitation}
 To discover DNT friendly web services has many limitations. Firstly, to echo \verb|DNT: 1| header back to user is a recommendation rather than requirement. Furthermore, this recommendation is defined in a draft\cite{dntdraft}, rather than a requirement document. We found that tracking-protection team of W3C has raised up an issue doubting to force servers include \verb|DNT: 1| header in response if it support Do Not Track and received a HTTP request with \verb|DNT: 1| header. However, this issue was closed with the result that they should not force the server mirror DNT headers. They only request that DNT HTTP header could not be modified by intermediaries.
@@ -189,7 +207,9 @@ We are very interested in those advertisement platforms since they are the major
 
 To test on those advertisement platforms, we have to reproduce the Lorrie \emph{et al} study, by replacing target websites by those websites embedded advertisements provided those advertisement platforms. Unfortunately, after several approach, we found this is infeasible in reality. It might still be able to discover a very small portion of those placements, but can hardly scaled up.
 
-Here is the reason. None of those advertisement platform company would like to post their placement target websites on their websites. Thus for us, we cannot easily fount the target websites by the information provided by those company websites. There might be a way to discover there the ads are placed by purchasing an advertisement place provided by them. However, due to th context that this is a course project, we do not have budget to implement this. Also, this is not a scalable way. Another potential approach is to crawling a large amount of popular websites and log all traffics generated. Comparing either the URL or content to make educational guesses on detecting the placements. This also requires a powerful machine and long time period. Moreover, the URL of a advertisement block does not have to be as the same, or even similar, to the URL of the company website, which makes this more like impossible.
+Here is the reason. None of those advertisement platform company would like to post their placement target websites on their websites. Thus for us, we cannot easily fount the target websites by the information provided by those company websites. There might be a way to discover there the ads are placed by purchasing an advertisement place provided by them. However, due to th context that this is a course project, we do not have budget to implement this. Also, this is not a scalable way at all. Another potential approach is to crawling a large amount of popular websites and log all traffics generated. Comparing either the URL or content to make educational guesses on detecting the placements. This also requires a powerful machine and long time period. Moreover, the URL of a advertisement block is not terminative, since it does not have to be as the same, or even similar, to the URL of the company website, which makes this more like impossible.
+
+Even though we are granted with powerful machines, the crawling network methodology might not be able to identify the advertisements and third party trackers. This would be discussed in Section~\ref{sec:complexity} in detail.
 
 There are also several advertisement platforms, such as MediaMind and Jumptap, who are targeting on mobile and tablet devices, embedded into mobile web and native applications. This makes the measurement even more difficult and infeasible.
 
@@ -205,28 +225,170 @@ Currently, Twitter does not implement this feature for profitable purpose, but t
 \begin{center}
 \includegraphics[width=0.9\columnwidth]{tailored}
 \end{center}
-\caption{Screen shot of Twitter tailored suggestion preview black}
+\caption{Screen shot of Twitter tailored suggestion preview block}
 \label{fig:tailored}
 \end{figure}
 
 \section{Experiment} \label{sec:experiment}
 
-We did a series of experiments to measuring the server compliance on Do Not Track. The methodology is similar to Lorrie \emph{et al} study, with several adjustment and enhancement compared to their experiment. We also adjust our experiment during the study and reproduce the experiment a few times. The result of the experiment is presented in the last of this section.
+We did a series of experiments to measure the server compliance on Do Not Track. The methodology is similar to Lorrie \emph{et al} study, with certain adjustment and enhancement compared to their experiment. We also adjust our experiment during the study and reproduce the experiment a few times. The result of the experiment is presented in the last of this section.
 
-\subsection{Methodology}
+Our main experiment is on Twitter. We also do some supplementary experiments on Google text ads and the AdRoll and AddThis mention in Section~\ref{sec:services}. We discuss about the main experiment on Twitter in Section ~\ref{sec:pre}, ~\ref{sec:method}, ~\ref{sec:expect}, and ~\ref{sec:result}. We present those supplementary experiments in Section ~\ref{sec:supplement}. 
 
-\subsection{Adjustment}
+\subsection{Assumptions and Preparation} \label{sec:pre}
 
-\subsection{Result}
+Twitter has multiple type of suggestions, including promotion suggestion, suggestion based on current Twitter network, and tailored suggestion. Twitter only claimed their support to Do Not Track on tailored suggestion. Thus we measure compliance of Twitter on Do Not Track based on tailored suggestion feature.
+
+We select to examine Twitter tailored suggestion on Twitter tailored suggestion preview page~\cite{twittertailoredpreview}. The preview page, which is supposed to present a sample of the whole suggestion pool, could show up to nine suggested accounts on each visit. It could be refreshed and the accounts showed would be shuffled. We choose this page since it is the easiest way to deduce the whole suggestion pool in Twitter server, since the suggestion block on homepage of twitter only shows up to three suggestions. These suggestions does not guarantee to contain tailored suggestions for each visit.
+
+In the following experiment, we assume Twitter tailored suggestion preview page~\cite{twittertailoredpreview} keep strict consistency with Twitter tailored suggestion feature. I.e., the preview page, which can show up to nine suggestions on each visit, would not contains any suggested accounts that are not contained in tailored suggestion account pool. Furthermore, if the preview page does not show any suggestions, the tailored suggestion pool is also empty.
+
+We also assume that tailored suggestion is solely based on third-party tracking technology by Twitter, according to Twitter's explanation of tailored suggestion feature~\cite{twitterts}. We assume that if the user is not tracked, then there will be not any suggestions not only in the preview page showed to the user, but also in the back-end suggestion pool for this user specifically. 
+
+When a user visits the preview page of tailored suggestion, if there is no suggestions, it will show a non-suggestion page as Figure~\ref{fig:nosug}.
+
+We also found that tailored suggestion will not show up or changed until about three days after a new user has been registered or browsing convention has been change. Thus, we have to wait three days to obtain the correct suggestions. In this three days, we keep browsing history clean.
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=0.9\columnwidth]{nosug}
+\end{center}
+\caption{Screen shot of Twitter tailored suggestion preview page with no suggestions}
+\label{fig:nosug}
+\end{figure}
+
+\subsection{Methodology} \label{sec:method}
+
+We create 4 testing Twitter accounts, make them as verified users by confirming 4 testing email accounts, and let each of them follow 10 identical accounts. These accounts are randomly selected by hand in the recommendation page, but are the same for those 4 testing accounts. These accounts are mostly celebrities such as Justin Bieber and Barack Obama. We do so because we would like to simulate the real Twitter users at most level. Due to some previous experiments we made, we found that unverified new users with 0 following accounts might not be selected as the tailored suggestion target. Also, we would like to make sure that the 4 testing accounts share the same variables for every aspects except for Do Not Track property. Of course, we enabled tailored suggestion for all accounts when registering.
+
+For those 4 testing accounts, we differentiate them in the different ways presented in Table~\ref{table:testaccount}. The basic idea is to test:
+\begin{itemize}
+\item Behavior of Twitter tailored suggestion when a user expressed Do Not Track during browsing websites in Twitter ecosystem.
+\item Behavior of Twitter tailored suggestion when a user does not express Do Not Track during browsing websites in Twitter ecosystem.
+\item Behavior of Twitter tailored suggestion when a user expressed Do Not Track during browsing websites in Twitter ecosystem but does not expressed Do Not Track when visiting tailored suggestion preview page.
+
+\end{itemize} 
+
+\begin{table*}
+\centering
+\footnotesize
+\begin{tabular}{ccccc}
+\toprule
+Account&Training with DNT&Training without DNT&Preview with DNT&Preview without DNT\\
+\midrule
+tester 1&&\checkmark&&\checkmark\\
+\addlinespace
+tester 2&\checkmark&&\checkmark&\\
+\addlinespace
+tester 3&\checkmark&&&\checkmark\\
+\addlinespace
+tester 4&&&&\checkmark\\
+\bottomrule
+\end{tabular}
+\caption{Different behaviors of different testing accounts in the experiment on Twitter}
+\label{table:testaccount}
+\end{table*}
+
+We would train tester 1, 2, and 3 to browsing multiple websites on a specific topic. Specifically, we use Selinum 2 with Java to generate a browser automation program that search the topic on Google.com, click all the result links on first 10 pages. This is about 100 pages. We would assume a certain portion of these websites are in Twitter ecosystem. Then we wait for a period of time to allow server update its data, and then visit and take a screen shot of the Twitter tailored suggestion preview page. The algorithm is presented in Algorithm~\ref{dntexperiment}. \todo{ylang: make an algorithm}
+
+% \begin{algorithm}
+% \caption{<your caption for this algorithm>}\label{dntexperiment}
+
+% \begin{algorithmic}
+% \FOREACH {$i=0$ \TO $10$} \DO
+%   \STATE request \GETS new HTTP request to url\\
+%   \STATE add regular HTTP headers to request\\
+%   \STATE add \verb|DNT: 1| HTTP header to request\\
+%   \STATE send request\\ 
+%   \STATE response \GETS response received
+%   \IF response status code is 200 \THEN
+%     \IF response contains header of \verb|DNT: 1| \THEN 
+%       \STATE log url to file marked as  DNT: 1\\ \ENDIF
+%     \IF response contains header of \verb|DNT: 0| \THEN 
+%       \STATE log url to file marked as  DNT: 0\\ \ENDIF
+%     \ELSE
+%       \STATE log url to file marked as NOT SUPPORT  \ENDIF
+%     \ENDIF
+%   \ELSE
+%     \STATE log url to file marked with corresponding status code
+%   \ENDIF
+% \ENDFOR
+% \end{algorithmic}
+% \end{algorithm}
+
+We then will measure the similarity of the accounts showed up in preview page with the original top. We do this procedure by hand with our best knowledge. Admittedly this is not the most strict and precise way, but it is reasonable since the account name is very short, thus the comparison based on \emph{Cosine Similarity} used by Lorrie \emph{et al} study~\cite{balebako2012measuring} is not very applicable in our study. Since tailored suggestions would be either existed or not existed by our assumption mentioned in Section~\ref{sec:pre}, the similarity itself is not as sensitive as in Lorrie \emph{et al} study. In addition, the suggestions are mostly public well-known Twitter accounts with large population of followers. The accuracy of our examination on the similarity would be increased by this factor.
+
+Tester 1 is a control tester that will generate browsing history and visit the preview page with Do Not Track off. Tester 2 and 3 are experimental testers: they will generate browsing history with Do Not Track on but visit the preview page with Do Not Track on and off respectively. Tester 4 is also a control tester with no browsing history and will visit the preview page directly.
+
+To prevent our experiment being affected by tracking based on browser, rather than on user specific, we create 4 different browser profiles for each tester and keep the tester with their own profile.
+
+\subsection{Expectation} \label{sec:expect}
+
+Regardless of Twitter's compliance of Do Not Track, tailored suggestions for tester 1 should always be related to the topic. Also, there should not be any tailored suggestion for tester 4.
+
+If Twitter complies Do Not Track on server-side strictly, we expect there is not any tailored suggestions for tester 2 and 3. In contrast, if Twitter does not complies Do Not Track at all, there would be tailored suggestions for tester 2 and 3, and also the suggested accounts should be related to the browsing history.
+
+There might be a third situation, that Twitter complies Do Not Track in a special way on the preview page only. Specifically, it would not show the tailored suggestions if it detected Do Not Track is on, but it still tracked the user in its server and keep the user specific data in database. For this condition, we expect that there is no suggestions for tester 2 but there will be suggestions related to the browsing history for tester 3.
+
+\subsection{Result} \label{sec:result}
+
+In our experiment, the tailored suggestions for tester 1 is showed in the preview page. The accounts suggested by tailored suggestion are close related to the topic. There are no tailored suggestions showed in the preview pages for tester 2, 3, and 4. For tester 2, the preview page shows up a special text description to indicate that Do Not Track is enable when visiting this page, where the screen shot is showed in Figure~\ref{fig:dnton}
+
+We could infer that tester 2 and 3, who browsing the websites with Do Not Track enabled, is not tracked by Twitter as a third party.
+
+This result is consistent with the promise of Twitter. Based on our experiment, Twitter is strictly following Do Not Track standard with strong compliance.
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=0.9\columnwidth]{dnton}
+\end{center}
+\caption{Screen shot of Twitter tailored suggestion preview page with DNT on}
+\label{fig:dnton}
+\end{figure}
+
+\subsection{Supplementary Experiments} \label{sec:supplement}
+Along with the main experiment targeting on Twitter, we did several supplementary experiments to explore more on the compliance of Do Not Track.
+
+\paragraph{Twitter}
+After found that Twitter is strictly respecting Do Not Track, we are wondering how Twitter will process the previous user tracking data if it detected that Do Not Track is included in user's request. We add a tester 5, who will re-do the procedure identically with tester 1. There will be relevant suggestions to browsing histories. Now we turn Do Not Track on and revisit the preview page, within expect, it shows the block as Figure\ref{dnton} to indicate that Do Not Track on. Finally, we turn Do Not Track off and revisit the preview page. Surprisingly, there is no suggestions showed up, where a block as Figure\ref{nosug} is displayed. 
+
+We can, then, infer that Twitter would delete, or deprecate, the user tracking data in its back-end database. This feature is not required by Do Not Track, but is intuitive and could protect user privacy better.
+
+\paragraph{AdRoll and AddThis}
+
+\paragraph{Google Text ads}
+Since Lorrie \emph{et al} study~\cite{balebako2012measuring} mentions that Google will support Do Not Track in later 2012. Up to date, which is in 2013, we would like to partially reproduce the same experiment made by Lorrie \emph{et al}. We would like to modify the experiment to a easier methodology, but with less restrict logic. We would browsing websites of related topics listed by Google search on the top 10 pages, which is similar to our main experiment. We would like to compare the similarity manually by our best knowledge. We did this because we are merely to obtaining a updated result of wither Google text ads is supporting Do Not Track, rather than re-design the whole experiment with other privacy tools. Also, this is only one of our supplementary experiment.
+
+We choose the topic as "european travel" and re-use the target website \url{chicagotribune.com/news/local/breaking} provided by the original experiment. We choose only one target site since we assume that Google text ads block embedded within different target websites behave in same way. We create 3 testers. Tester 1 and 2 will generate browsing history with Do Not Track on and off respectively. Tester 3 will not generate browsing history.
+
+We found that tester 1, which with Do Not Track on, is still receiving Google text ads related to "european travel". The screen shot of the Google text ads block on \url{chicagotribune.com/news/local/breaking} is presented in Figure\~ref{fig:textad}. A very similar text ad is showed for tester 2. Both of them are determined to be related to the topic "european travel". A different Google text ad block, presented in Figure\ref{fig:textadrandom} is shown to tester 3, without any browsing history. This ad block is not relevant to the topic.
+
+Thus, we could infer that tester 1 and 2 are tracked, even tester 1 expresses Do Not Track in each HTTP requests. Thus, it can be concluded that Google text ad does not support Do Not Track yet.
+\begin{figure}
+\begin{center}
+\includegraphics[width=0.9\columnwidth]{textad}
+\end{center}
+\caption{Screen shot of Google text ads showed to test 1 with DNT on}
+\label{fig:textad}
+\end{figure}
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=0.9\columnwidth]{textadrandom}
+\end{center}
+\caption{Screen shot of Google text ads showed to test 3 without browsing history}
+\label{fig:textadrandom}
+\end{figure}
 
 \section{Limitation} \label{sec:limitation}
+
 
 The value of this paper is not only the measurement itself, but also several limitations we discovered during our study. Some of these limitations are on the design of the Do Not Track concept; others are on the experiment methodology and implement. There is also a limitation of reality and context of the research study.
 
 \subsection{Do Not Show or Do Not Track}
 \todo{ruoyul: add the limitation of never really can test out server behavior}
 
-\subsection{Where is the Ad}
+\subsection{Where is the Ad} \label{sec:complexity}
 \todo{ruoyul: add the limitation of cannot locate the ads}
 
 \subsection{Who is the tracker}

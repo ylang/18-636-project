@@ -3,10 +3,10 @@ package edu.cmu.ece.selenium;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
@@ -44,15 +44,15 @@ public class Driver {
 		 * har.writeTo(System.out); // The Firefox driver supports javascript
 		 */
 		WebDriver driver = new FirefoxDriver();
-
-		driver.get("http://www.twitter.com");
-		driver.findElement(By.id("signin-email")).clear();
-		driver.findElement(By.id("signin-email")).sendKeys(USER_EMAIL);
-		driver.findElement(By.id("signin-password")).clear();
-		driver.findElement(By.id("signin-password")).sendKeys(USER_PASSWORD);
-		new WebDriverWait(driver, 30).until(ExpectedConditions
-				.presenceOfElementLocated(By
-						.xpath("//*[@id='page-container']")));
+		Scanner sc = new Scanner(System.in);
+//		driver.get("http://www.twitter.com");
+//		driver.findElement(By.id("signin-email")).clear();
+//		driver.findElement(By.id("signin-email")).sendKeys(USER_EMAIL);
+//		driver.findElement(By.id("signin-password")).clear();
+//		driver.findElement(By.id("signin-password")).sendKeys(USER_PASSWORD);
+//		new WebDriverWait(driver, 30).until(ExpectedConditions
+//				.presenceOfElementLocated(By
+//						.xpath("//*[@id='page-container']")));
 		driver.get("http://www.google.com");
 		WebElement query = driver.findElement(By.name("q"));
 		query.sendKeys("european trip");
@@ -100,6 +100,7 @@ public class Driver {
 			}
 		}
 		driver.get("http://www.twitter.com");
+		sc.next();
 		File scrFile = ((TakesScreenshot) driver)
 				.getScreenshotAs(OutputType.FILE);
 		// Now you can do whatever you need to do with it, for example copy
