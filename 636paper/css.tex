@@ -47,7 +47,7 @@ This technique seems to be beneficial for both advertisement publishers and adve
 
 The concept of \emph{Do Not Track} (DNT)~\cite{tschofenignot} was firstly proposed and prototyped in 2009 by researcher Christopher Soghoian, Sid Stamm, and Dan Kaminsky on Firefox web browser~\cite{wikidnt}. DNT is proposed to be an HTTP request header in HTTP request header field send along HTTP requests. It is a protocol that presents the unwillingness of the user to be tracked. Ideally, it requests that a web application disable either its tracking or cross-site user tracking of an individual user.
 
-Due to the concept of \emph{Do Not Track} and its implementation, there are no technical enforcement mechanisms built-in~\cite{tschofenignot}. Thus there is the question of how users (or more realistically researchers, etc. on behalf of users) detect success or failure to comply. A research project in Carnegie Mellon University did a study on measuring on the effectiveness of of privacy tools limiting behavioral advertising~\cite{balebako2012measuring}. In this study, Do Not Track has been considered as a way to limit behavioral advertising and the measurement on Do Not Track is done by their methodology. The basic idea is to first generated browsing history on a topic key word with and without DNT header, and then browse the website that contains online behavioral advertising. To compare the similarity between the advertisement showed up and the key word, the effectiveness of privacy tool is revealed.
+Due to the concept of \emph{Do Not Track} and its implementation, there are no technical enforcement mechanisms built-in~\cite{tschofenignot}. Thus there is the question of how users (or more realistically researchers, etc. on behalf of users) detect success or failure to comply. A research project in Carnegie Mellon University did a study on privacy protection tools~\cite{balebako2012measuring}. In this study, Do Not Track has been considered as a way to limit behavioral advertising and the measurement on Do Not Track is done by their methodology. The basic idea is to first generated browsing history on a topic key word with and without DNT header, and then browse the website that contains online behavioral advertising. To compare the similarity between the advertisement showed up and the key word, the effectiveness of privacy tool is revealed.
 
 Our study here is inspired by this project and the research paper \emph{Measuring the effectiveness of privacy tools for limiting behavioral advertising}~\cite{balebako2012measuring} written by Lorrie Faith Cranor \emph{et al}. We did a study on the protocol Do Not Track and research by Lorrie \emph{et al}, learned some takeaway and then attempted to measuring the effectiveness of Do Not Track specifically. Here, measuring the effectiveness of Do Not Track is more meaningful to measuring the server-side compliance of Do Not Track, since in the current stage, the web services and networks who claimed to support DNT is limited. To test on those services who does not support DNT is meaningless, and the result would be able to anticipated easily.
 
@@ -91,7 +91,7 @@ In a specific network interaction, a party with which the user intentionally int
 
 In a specific network interaction, any entity that is not the user, user agent, or a first party is considered a \emph{third party}~\cite{w3ctrackingcompliance}. When a third party receives a communication to which a DNT:1 header is attached, it must not collect, retain, share, or use information related to that communication outside of the permitted uses. Furthermore, that third party must not share or use information about \emph{previous} communications in which it was a third party, outside of the permitted uses. Permitted uses are including short term collection and use without personalization and transmission, technical using such as debugging, frequency capping, and security prevention, and business using such as financial auditing. Those uses should not include any secondary use or personalization. Data transparency and reasonable security is required~\cite{w3ctrackingcompliance}.
 
-\paragraph{Compliance of User Agent.}
+\paragraph{Compliance of User Agent}
 
 Compliance of Do Not Track is also applicable on user agent. However, the requirements are specified on the control of express a tracking preference. For instance, a user agent must ensure that the tracking preference choices are communicated to users clearly and conspicuously, and shown at the time and place the tracking preference choice is made available to a user. Also, A user agent must not express a tracking preference for a user unless the user has given express and informed consent to indicate a tracking preference~\cite{w3ctrackingcompliance}.
 
@@ -195,8 +195,19 @@ There are also several advertisement platforms, such as MediaMind and Jumptap, w
 
 \subsection{Twitter}
 
-Although the partial list does not provided much valuable suggestions, the only social network who supports Do Not Track, Twitter, still makes us feel interested.
+Although the partial list does not provided much valuable suggestions, the only social network who supports Do Not Track, Twitter, still makes us feel interested. As one of the major social networks, Twitter is the first and the only one declared to support Do Not Track. According to its rule and policy~\cite{twitterdnt}, Twitter supports DNT for the tailored suggestions feature. Tailored suggestion feature is on of the testing features of Twitter, which provides recommendations of accounts to follow that are most relevant to user~\cite{twitterfaq}. These recommendations of accounts are generated based on the websites where users visited in last 10 days. Twitter is able to track the user on the websites in Twitter ecosystem, which have integrated a Twitter button or widget. The recommendation accounts includes the accounts frequently followed by other visitors to the sites of a tracked user has visited, and also the Twitter accounts maintained by the visited site. For current users, these suggestions will show up in "Who To Follow" block on the home page after logging in.
 
+Twitter also kindly provided a preview page of tailored suggestion, which allows user to have a preview on the recommendation accounts suggests by tailored suggestion feature. The snapshot of the page is provided in Figure~\ref{fig:tailored}. This would be a much convenient way for our testers to detect results of tailored suggestions.
+
+Currently, Twitter does not implement this feature for profitable purpose, but they clearly states that they will do so in the future~\cite{twitterfaq}. They also indicate that they would not release these tracking data to any third party.
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=0.9\columnwidth]{tailored}
+\end{center}
+\caption{Screen shot of Twitter tailored suggestion preview black}
+\label{fig:tailored}
+\end{figure}
 
 \section{Experiment} \label{sec:experiment}
 
