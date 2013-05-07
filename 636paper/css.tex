@@ -141,30 +141,27 @@ We firstly did not find any explicit list of websites, services and networks who
 Thus we did a stepping-out experiment to collect websites who support Do Not Track. Our algorithm is presented in Algorithm~\ref{listdiscover} \todo{ylang: add a algorithm}. The basic idea is to send HTTP requests to all the target URLs. Here, our target URLs are the URLs of top 100,000 popular websites listed by Alexa~\cite{alexa}. For each requests, add regular HTTP headers such as \texttt{User-Agent}, \texttt{Accept-Encoding}, \texttt{Accept-Language}, etc. to simulate a real HTTP request send from browser. A \verb|DNT: 1| header will be added for each request. Send the request to the website and obtain the HTTP response. If the response status code is \verb|200 OK| and there is also a \verb|DNT: 1| header in the response header field, then we will regard this website is supporting Do Not Track.
 
 
-% \begin{algorithm}
-% \caption{<your caption for this algorithm>}\label{listdiscover}
-
-% \begin{algorithmic}
-% \FOREACH {$i=0$ \TO $10$} \DO
-%   \STATE request \GETS new HTTP request to url\\
-%   \STATE add regular HTTP headers to request\\
-%   \STATE add \verb|DNT: 1| HTTP header to request\\
-%   \STATE send request\\ 
-%   \STATE response \GETS response received
-%   \IF response status code is 200 \THEN
-%     \IF response contains header of \verb|DNT: 1| \THEN 
-%       \STATE log url to file marked as  DNT: 1\\ \ENDIF
-%     \IF response contains header of \verb|DNT: 0| \THEN 
-%       \STATE log url to file marked as  DNT: 0\\ \ENDIF
-%     \ELSE
-%       \STATE log url to file marked as NOT SUPPORT  \ENDIF
-%     \ENDIF
-%   \ELSE
-%     \STATE log url to file marked with corresponding status code
-%   \ENDIF
-% \ENDFOR
-% \end{algorithmic}
-% \end{algorithm}
+\begin{algorithm}
+\caption{Detect DNT friendly websites}\label{listdiscover}
+\begin{algorithmic}
+\ForAll {url of top 100,000 websites}
+  \State $request := \text{new HTTP request to url}$
+  \State $\text{send request with common HTTP headers and }\verb|DNT: 1|$ 
+  \State $response := \text{response received}$
+  \If {response status code is 200}
+    \If {response contains header of DNT: 1}
+      \State $\text{log url to file marked as }\textbf{DNT: 1}$
+    \ElsIf {response contains header of DNT: 0}
+      \State $\text{log url to file marked as }\textbf{DNT: 0}$
+    \Else
+      \State $\text{log url to file marked as }\textbf{NOT SUPPORT}$
+    \EndIf
+  \Else
+    \State $\text{log url to file marked with corresponding status code}$
+  \EndIf
+\EndFor
+\end{algorithmic}
+\end{algorithm}
 
 \paragraph{Results}
 We did this on the scale of 100,000 websites using multiple threads and finished in less than 12 hours. Among the results, 88,432 websites are successfully accessed. 88,426 of them did not echo the \verb|DNT: 1| header back. Only 6 of the top 100,000 websites echoed the \verb|DNT: 1| header back. This portion is extremely small. These websites are:
@@ -305,30 +302,21 @@ tester 4&&&&\checkmark\\
 
 We would train tester 1, 2, and 3 to browsing multiple websites on a specific topic. Specifically, we use Selinum 2 with Java to generate a browser automation program that search the topic on Google.com, click all the result links on first 10 pages. This is about 100 pages. We would assume a certain portion of these websites are in Twitter ecosystem. Then we wait for a period of time to allow server update its data, and then visit and take a screen shot of the Twitter tailored suggestion preview page. The algorithm is presented in Algorithm~\ref{dntexperiment}. \todo{ylang: make an algorithm}
 
-% \begin{algorithm}
-% \caption{<your caption for this algorithm>}\label{dntexperiment}
+\begin{algorithm}
+\caption{Detect DNT friendly websites}\label{dntexperiment}
+\begin{algorithmic}
+\State $\text{login Twitter}$
+\State $\text{Google search of the topic word}$
+\State $url_list := \text{result links in first 10 pages}$
+\ForAll {$url \in url_list$}
+  \State $\text{visit the page of } url$
+  \State $\text{, wait until the page loaded completely}$
+\EndFor
+\State $\text{visit Twitter tailored suggestion preview page}$
+\State $\text{take a screen shot}$
+\end{algorithmic}
+\end{algorithm}
 
-% \begin{algorithmic}
-% \FOREACH {$i=0$ \TO $10$} \DO
-%   \STATE request \GETS new HTTP request to url\\
-%   \STATE add regular HTTP headers to request\\
-%   \STATE add \verb|DNT: 1| HTTP header to request\\
-%   \STATE send request\\ 
-%   \STATE response \GETS response received
-%   \IF response status code is 200 \THEN
-%     \IF response contains header of \verb|DNT: 1| \THEN 
-%       \STATE log url to file marked as  DNT: 1\\ \ENDIF
-%     \IF response contains header of \verb|DNT: 0| \THEN 
-%       \STATE log url to file marked as  DNT: 0\\ \ENDIF
-%     \ELSE
-%       \STATE log url to file marked as NOT SUPPORT  \ENDIF
-%     \ENDIF
-%   \ELSE
-%     \STATE log url to file marked with corresponding status code
-%   \ENDIF
-% \ENDFOR
-% \end{algorithmic}
-% \end{algorithm}
 
 We then will measure the similarity of the accounts showed up in preview page with the original top. We do this procedure by hand with our best knowledge. Admittedly this is not the most strict and precise way, but it is reasonable since the account name is very short, thus the comparison based on \emph{Cosine Similarity} used by Lorrie \emph{et al} study~\cite{balebako2012measuring} is not very applicable in our study. Since tailored suggestions would be either existed or not existed by our assumption mentioned in Section~\ref{sec:pre}, the similarity itself is not as sensitive as in Lorrie \emph{et al} study. In addition, the suggestions are mostly public well-known Twitter accounts with large population of followers. The accuracy of our examination on the similarity would be increased by this factor.
 
