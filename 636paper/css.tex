@@ -41,7 +41,7 @@ Ruoyu Li\\
 \keywords{DNT, Third Party Tracking, Online Behavioral Advertising}
 
 \section{Introduction}\label{sec:intro}
-Online behavioral advertising (OBA)~\cite{sheltononline} is a type of targeted advertising, by which companies track consumers’ online activities to target them for digital advertising directed at their specific interests. Web users could easily see targeted advertisement in embedded block on their browsing websites because of this technique. For instance, a user might able to see several advertisement about "Cheap flight to Italy" after searching on search engine with key work "European trip" and visited several results listed. This is because when the user visit several websites contains DOM element which will send HTTP request to third party tracker. By reading and setting cookie, the third party tracker will be able to track the user's browser history, thus classify the user with interests.
+Online behavioral advertising (OBA)~\cite{sheltononline} is a type of targeted advertising, by which companies track consumers’ online activities to target them for digital advertising directed at their specific interests. Web users could easily see targeted advertisement in embedded block on their browsing websites because of this technique. For instance, a user might able to see several advertisement about "cheap flight to Italy" after searching on search engine with key work "european trip" and visited several results listed. This is because when the user visit several websites contains DOM element which will send HTTP request to third party tracker. By reading and setting cookie, the third party tracker will be able to track the user's browser history, thus classify the user with interests.
 
 This technique seems to be beneficial for both advertisement publishers and advertisement platform, since publishers are able to push their advertisements to fewer but more accurate targets, and advertisement platform, who has the ability to classify targets, will attract more publishers to use their network. It even might be non-harmful since ideally, users are supposed to see those advertisements that is helpful for them specifically. However, privacy concern could be raised. Web users are being tracked: their browsing history is logged into third party companies' database without any awareness. Their interests, hobbies, even recent plans would be released to those trackers. This kind of tracking is blind to the willingness of users. I.e., when if the user does not want to be tracked, unless to reject all third party cookies, there is no good way to disallow the tracker.
 
@@ -63,7 +63,15 @@ The rest of this paper is organized as follows. Section~\ref{sec:background} pre
 In this section, we would like introduce in detail about several background concepts and knowledges, including \emph{Online Behavioral Tracking}, \emph{Online Behavioral Advertising} and \emph{Do Not Track}. 
 \subsection*{Online Behavioral Tracking}
 
-\todo{ruoyul: add tracking, including how users are tracked, who are the trackers, and basic legal issue}
+Third-party tracking is used for a lot of purposes on the web. While it can be beneficial for third party to track a user to provide more useful content such as social integration and personalized content, it can also be used to track a user’s browsing history across the internet which can then be used for advertising purposes. 
+
+When a user visit a first party webpage, if some third party content is embedded in the page, the third party will get a HTTP request from the user as well, requesting the embedded content from the third party. The third party is then able to set a cookie in the user’s browser and access information on the page of first party (such as by looking at the HTTP referrer, or getting the document.title if the embedded element is a script; some first party might even voluntarily shares the data to a third party). 
+
+Besides tracking the users with HTTP cookie, there are many other ways by which a third party can track a user. In the paper Third-Party Web Tracking: Policy and Technology~\cite{mayer2012third}, Mayer and Mitchell talks about many other technologies to pseudonymously track the user. For example, there are stateful tracking technology such as HTTP cache ETags, TLS/SSL session ID, HTML5 storage, and stateless fingerprinting such as IP address, user agent, and operating system. A combination of these technologies can be used to uniquely identify a user across the web even if no HTTP cookies are used. The paper also cites a 2010 study by Eckersley that reports 83.6\%browsers out of 500,000 were uniquely identified with a subset of active fingering features. This has an implication on the effect of DNT if it works and all servers respect the header: DNT will be more effective than the methods that only deals with rejecting third party cookies since the compliant servers will stop using all means to stop tracking the user; furthermore, DNT will have the benefit of not breaking a lot of features on the web such as social integration since the DNT specification~\cite{tracking_compliance_20130430} allows necessary gathering of data to perform essential functionalities under some constraint. 
+
+The browsing history a third-party already reveals enough information about a user to raise serious concerns for both the users and policy makers. To make the matter worse, there are means through which a tracking company can obtain identifiable data about a user making the tracking no longer anonymous or even pseudonymous. According to a post on Stanford CIS blog titled There is No Such Thing as Anonymous Online Tracking~\cite{nosuchthing}, there are mainly 5 ways a third party can get data that able to personally identify a user. The primary way is when a third party is also a first party in another context, where the users voluntarily provide their identity. For example when a Facebook user visits another websites page, Facebook is able to tell where the user has been if the other page embeds Facebook widgets such as like button or comment box. Facebook is then able to provide a better targeted ad to the user with this learned browsing history. A second way, as we have talked about, is that a first party might voluntarily provide its users’ identity, if the two parties are cooperating or if the first party is selling the data for pay. Third, a first party may unintentionally leak identity such as by appending the user id after the user’s profile page. Additionally, a third party can obtain identifiable information by exploiting a first-party security vulnerability or matching pseudonymous browsing histories against identified datasets. 
+
+As we can see from above, third party tracking can reveal much information about a user including his/her browsing history, general interest, purchases, employment status and much more even including personally identifiable information. This is the reason why there has been much discussion on third-party tracking and DNT as a way to limit tracking to protect the user’s privacy.
 
 \subsection*{Online Behavioral Advertising}
 
@@ -71,7 +79,13 @@ In this section, we would like introduce in detail about several background conc
 
 \subsection*{Do Not Track}
 
-\todo{ruoyul: add DNT}
+Do Not Track is a combination of technology and policy attempt to enable users to opt out of third party tracking. It is a header field in the user’s HTTP request sent from the browser. The receiving web application/server of the HTTP request with DNT turn on is expected to cease tracking the user and not use the data stored in user agents. The Do Not Track header was originally proposed in 2009 by researchers Christopher Soghoian, Sid Stamm, and Dan Kaminsky. It is currently being standardized by the W3C~\cite{wikidnt}, and supported by most mainstream browsers. 
+
+The header field name is DNT and it currently accepts three values: 1 in case the user does not want to be tracked (opt out), 0 in case the user consents to being tracked (opt in), or null (no header sent) if the user has not expressed a preference. The default behavior is not to send the header, until the user chooses to enable the setting via their browser~\cite{wikidnt}. 
+
+The approach of DNT has a couple of benefits. First of all, the way of sending a HTTP header is completely compatible with the existing web technology. No large amount of additional work needs to be done at the server side to support DNT so that the existing internet ecosystem is not broken. Similarly, only a small amount of work is needed on the user agent to support sending the header. The user does not need to do anything such as installing a plugin or setup the browser so that adoption should be easier.
+
+Second of all, although some advertising companies allow user to opt of tracking by providing their own page to let the users specify their preference, there is no unifying and easy way to opt out of all companies that supports so. Furthermore, studies by McDonald and Cranor~\cite{mcdonald2010beliefs} and by Leon \emph{et al}.~\cite{leon2012johnny} suggests that the individual opt-out pages are not very effective and might be confusing to the users. Thus, DNT provide a easy and simple way for the user to express unwillingness to be tracked to all companies without adding much overhead.
 
 \subsection*{Browser Behavior} \label{sec:browserbehavior}
 
@@ -118,7 +132,7 @@ We propose our experiment as a more targeting one compared to be Lorrie \emph{et
 
 In this section, we present our attempt on revealing the list of Do Not Track friendly services and network. To test on the companies who claimed to support Do Not Track, we firstly have to find them. This is not an easy work. Although many companies would include their actions regard on Do Not Track in their privacy policies, it is not feasible to read through all those policies of all popular websites. We did an experiment by ourself on the point that servers which support Do Not Track are recommended to include DNT HTTP header in the HTTP response header field~\cite{dntdraft}. Then we also learned on a partial explicit list of companies supporting Do Not Track provided by W3C public-tracking team.
 
-\subsection{Discover DNT Friendly Web Services}
+\subsection{Discover DNT Friendly Web Services} \label{sec:dntheadertest}
 
 \paragraph{DNT Header in Response}
 We firstly did not find any explicit list of websites, services and networks who support Do Not Track. As defined in draft~\cite{dntdraft}, a server which supports Do Not Track is recommended to echo a \verb|DNT: 1| HTTP header back to user when it receives HTTP request with a \verb|DNT: 1| header in the HTTP header field. We are advised to discover the DNT Friendly list by ourselves.
@@ -239,9 +253,9 @@ Our main experiment is on Twitter. We also do some supplementary experiments on 
 
 Twitter has multiple type of suggestions, including promotion suggestion, suggestion based on current Twitter network, and tailored suggestion. Twitter only claimed their support to Do Not Track on tailored suggestion. Thus we measure compliance of Twitter on Do Not Track based on tailored suggestion feature.
 
-We select to examine Twitter tailored suggestion on Twitter tailored suggestion preview page~\cite{twittertailoredpreview}. The preview page, which is supposed to present a sample of the whole suggestion pool, could show up to nine suggested accounts on each visit. It could be refreshed and the accounts showed would be shuffled. We choose this page since it is the easiest way to deduce the whole suggestion pool in Twitter server, since the suggestion block on homepage of twitter only shows up to three suggestions. These suggestions does not guarantee to contain tailored suggestions for each visit.
+We select to examine Twitter tailored suggestion on Twitter tailored suggestion preview page~\cite{twittertailoredpreview}. The preview page, which is supposed to present a sample of the whole suggestion pool, could show up to six suggested accounts on each visit. It could be refreshed and the accounts showed would be shuffled. We choose this page since it is the easiest way to deduce the whole suggestion pool in Twitter server, since the suggestion block on homepage of twitter only shows up to three suggestions. These suggestions does not guarantee to contain tailored suggestions for each visit.
 
-In the following experiment, we assume Twitter tailored suggestion preview page~\cite{twittertailoredpreview} keep strict consistency with Twitter tailored suggestion feature. I.e., the preview page, which can show up to nine suggestions on each visit, would not contains any suggested accounts that are not contained in tailored suggestion account pool. Furthermore, if the preview page does not show any suggestions, the tailored suggestion pool is also empty.
+In the following experiment, we assume Twitter tailored suggestion preview page~\cite{twittertailoredpreview} keep strict consistency with Twitter tailored suggestion feature. I.e., the preview page, which can show up to six suggestions on each visit, would not contains any suggested accounts that are not contained in tailored suggestion account pool. Furthermore, if the preview page does not show any suggestions, the tailored suggestion pool is also empty.
 
 We also assume that tailored suggestion is solely based on third-party tracking technology by Twitter, according to Twitter's explanation of tailored suggestion feature~\cite{twitterts}. We assume that if the user is not tracked, then there will be not any suggestions not only in the preview page showed to the user, but also in the back-end suggestion pool for this user specifically. 
 
@@ -320,7 +334,7 @@ We then will measure the similarity of the accounts showed up in preview page wi
 
 Tester 1 is a control tester that will generate browsing history and visit the preview page with Do Not Track off. Tester 2 and 3 are experimental testers: they will generate browsing history with Do Not Track on but visit the preview page with Do Not Track on and off respectively. Tester 4 is also a control tester with no browsing history and will visit the preview page directly.
 
-To prevent our experiment being affected by tracking based on browser, rather than on user specific, we create 4 different browser profiles for each tester and keep the tester with their own profile.
+To prevent our experiment being affected by tracking based on browser, rather than on user specific, we create 4 different browser profiles for each tester and keep the tester with their own profile. We select our topic as \emph{Java development}.
 
 \subsection{Expectation} \label{sec:expect}
 
@@ -332,11 +346,20 @@ There might be a third situation, that Twitter complies Do Not Track in a specia
 
 \subsection{Result} \label{sec:result}
 
-In our experiment, the tailored suggestions for tester 1 is showed in the preview page. The accounts suggested by tailored suggestion are close related to the topic. There are no tailored suggestions showed in the preview pages for tester 2, 3, and 4. For tester 2, the preview page shows up a special text description to indicate that Do Not Track is enable when visiting this page, where the screen shot is showed in Figure~\ref{fig:dnton}
+In our experiment, the tailored suggestions for tester 1 is showed in the preview page. The screen shot if showed in Figure~\ref{fig:twitter}The accounts suggested by tailored suggestion, including \emph{Google Developer, Microsoft Research, Computer Science}, etc. are closely related to the topic \emph{Java development}. 
+
+There are no tailored suggestions showed in the preview pages for tester 2, 3, and 4. For tester 2, the preview page shows up a special text description to indicate that Do Not Track is enable when visiting this page, where the screen shot is showed in Figure~\ref{fig:dnton}
 
 We could infer that tester 2 and 3, who browsing the websites with Do Not Track enabled, is not tracked by Twitter as a third party.
 
 This result is consistent with the promise of Twitter. Based on our experiment, Twitter is strictly following Do Not Track standard with strong compliance.
+\begin{figure}
+\begin{center}
+\includegraphics[width=0.9\columnwidth]{twitter}
+\end{center}
+\caption{Screen shot of Twitter tailored suggestion preview page of tester 1, with DNT off}
+\label{fig:twitter}
+\end{figure}
 
 \begin{figure}
 \begin{center}
@@ -349,19 +372,75 @@ This result is consistent with the promise of Twitter. Based on our experiment, 
 \subsection{Supplementary Experiments} \label{sec:supplement}
 Along with the main experiment targeting on Twitter, we did several supplementary experiments to explore more on the compliance of Do Not Track.
 
-\paragraph{Twitter}
-After found that Twitter is strictly respecting Do Not Track, we are wondering how Twitter will process the previous user tracking data if it detected that Do Not Track is included in user's request. We add a tester 5, who will re-do the procedure identically with tester 1. There will be relevant suggestions to browsing histories. Now we turn Do Not Track on and revisit the preview page, within expect, it shows the block as Figure\ref{dnton} to indicate that Do Not Track on. Finally, we turn Do Not Track off and revisit the preview page. Surprisingly, there is no suggestions showed up, where a block as Figure\ref{nosug} is displayed. 
+\subsubsection{Twitter}
+After found that Twitter is strictly respecting Do Not Track, we are wondering how Twitter will process the previous user tracking data if it detected that Do Not Track is included in user's request. We add a tester 5, who will re-do the procedure identically with tester 1. There will be relevant suggestions to browsing histories. Now we turn Do Not Track on and revisit the preview page, within expect, it shows the block as Figure\ref{fig:dnton} to indicate that Do Not Track on. Finally, we turn Do Not Track off and revisit the preview page. Surprisingly, there is no suggestions showed up, where a block as Figure\ref{fig:nosug} is displayed. 
 
 We can, then, infer that Twitter would delete, or deprecate, the user tracking data in its back-end database. This feature is not required by Do Not Track, but is intuitive and could protect user privacy better.
 
-\paragraph{AdRoll and AddThis}
+\subsubsection{AdRoll and AddThis}
 
-\paragraph{Google Text ads}
+In Section~\ref{sec:dntheadertest}, we mentioned that we captured two URLs which echoed \verb|DNT: 1| header back. Those two URLs are \url{http://cf.addthis.com/red/p.json} and \url{https://d.adroll.com/cm/f/out}, which belongs to AddThis, a sharing data platform and AdRoll, an advertisement platform. We discussed in Section~\ref{sec:dntheadertest} that we are not able to identify where AdRoll is placing their advertisements or which web service that AddThis provide the user data to. However, we can still analysis their behavior by sending HTTP requests to them with Do Not Track on and off.
+
+\paragraph{AdRoll}
+With Do Not Track off, HTTP respond from \url{https://d.adroll.com/cm/f/out} contains:
+\begin{verbatim}
+HTTP/1.1 200 OK
+Server: nginx/1.0.10
+Date: Mon, 06 May 2013 14:51:40 GMT
+Content-Type: image/gif
+Connection: keep-alive
+Set-Cookie: __adroll=5302ee6440dfb9467aa174d7917d9fa6; 
+Version=1; Expires=Fri, 01-Jan-2021 00:00:00 GMT; 
+Max-Age=432000000; Path=/
+Pragma: no-cache
+p3p: CP="NON DSP COR CURa PSA PSD OUR BUS NAV STA"
+Content-Length: 35
+Cache-Control: no-store, no-cache, must-revalidate
+\end{verbatim}
+in header field. As we can see, it writes cookie which will expire very long time later. This 2 by 2 all black element will not cause any attention by visitors, but might be able to track users without their notice.
+
+With Do Not Track on, HTTP respond from \url{https://d.adroll.com/cm/f/out} contains:
+\begin{verbatim}
+HTTP/1.1 200 OK
+Server: nginx/1.0.10
+Date: Mon, 06 May 2013 14:58:16 GMT
+Content-Type: image/gif
+Connection: keep-alive
+Set-Cookie: __adroll=expire; Version=1; Expires=Sat,
+ 01-Jan-2000 00:00:00 GMT; Max-Age=-100000; Path=/
+Pragma: no-cache
+p3p: CP="NON DSP COR CURa PSA PSD OUR BUS NAV STA"
+DNT: 1
+Content-Length: 35
+Cache-Control: no-store, no-cache, must-revalidate
+\end{verbatim}
+in header field. It sets cookie, which it wrote in the request when Do Not Track off, to \verb|expire|, and set the expire date of this cookie is sometime already passed. I.e., it makes the cookie expired. We can reasonable speculate that this request does not track the user anymore.
+
+\paragraph{AddThis}
+Response obtained when sending requests to from \url{http://cf.addthis.com/red/p.json} does not involve any cookie reading or setting. However it is quite interesting that the json file it returned.
+
+With Do Not Track on, it will return a json file contains three json object with names:
+
+\begin{itemize}
+\item \verb|"urls"|
+\item \verb|"segments"|
+\item \verb|"loc"|
+\end{itemize}
+
+\verb|"urls"| contains several URL strings. These could be which advertisement the user has been viewed, since the URLs are with domain of \emph{media6degrees}, \emph{addthis}, \emph{adadviser}, which are all advertisement platforms. Or it could be meaning differently. \verb|"loc"| contains a base64 encoded string: \verb|MTUyMDFOQVVTUEEyMjA0MTAwMDUwODYyODAwVg==|. It could be decoded to \verb|15201NAUSPA2204100050862800V|. This certainly contains a geolocation information since the we are located in the area of Pittsburgh, PA, USA with the zip code of 15213, which is pretty close of the area of zip code 15201. That string contains several matching information such as \textbf{15201}, \textbf{US}, \textbf{PA}. It is reasonable to speculate that this \verb|"loc"| field contains the geolocation of the user. It might not be the currently geolocation, but might be the geolocation obtained recently. \verb|"segments"| only contains an empty array.
+
+With Do Not Track off, the jason file returned still contains \verb|"url"| and \verb|"segments"| json objects, but both of them contain an empty array. \verb|"loc"| json object is not contained in this returned json file.
+
+\paragraph{Conclusion}
+
+Since we can only test these two networks as a normal user with no privileges or knowledges of the server design, we can only make educational inference based on the HTTP response we received. It is reasonable to conclude that both these two URLs of AdRoll and AddThis would track users with Do Not Track off. However, both of them will stop track users when Do Not Track is enabled. Thus, AdRoll and AddThis are complying with Do Not Track. Although they do not include any detail on their privacy policies, but they expressed their supporting of Do Not Track by echoing back \verb|DNT :1| header to users.
+
+\subsubsection{Google Text ads}
 Since Lorrie \emph{et al} study~\cite{balebako2012measuring} mentions that Google will support Do Not Track in later 2012. Up to date, which is in 2013, we would like to partially reproduce the same experiment made by Lorrie \emph{et al}. We would like to modify the experiment to a easier methodology, but with less restrict logic. We would browsing websites of related topics listed by Google search on the top 10 pages, which is similar to our main experiment. We would like to compare the similarity manually by our best knowledge. We did this because we are merely to obtaining a updated result of wither Google text ads is supporting Do Not Track, rather than re-design the whole experiment with other privacy tools. Also, this is only one of our supplementary experiment.
 
 We choose the topic as "european travel" and re-use the target website \url{chicagotribune.com/news/local/breaking} provided by the original experiment. We choose only one target site since we assume that Google text ads block embedded within different target websites behave in same way. We create 3 testers. Tester 1 and 2 will generate browsing history with Do Not Track on and off respectively. Tester 3 will not generate browsing history.
 
-We found that tester 1, which with Do Not Track on, is still receiving Google text ads related to "european travel". The screen shot of the Google text ads block on \url{chicagotribune.com/news/local/breaking} is presented in Figure\~ref{fig:textad}. A very similar text ad is showed for tester 2. Both of them are determined to be related to the topic "european travel". A different Google text ad block, presented in Figure\ref{fig:textadrandom} is shown to tester 3, without any browsing history. This ad block is not relevant to the topic.
+We found that tester 1, which with Do Not Track on, is still receiving Google text ads related to "european travel". The screen shot of the Google text ads block on \url{chicagotribune.com/news/local/breaking} is presented in Figure~\ref{fig:textad}. A very similar text ad is showed for tester 2. Both of them are determined to be related to the topic "european travel". A different Google text ad block, presented in Figure~\ref{fig:textadrandom} is shown to tester 3, without any browsing history. This ad block is not relevant to the topic.
 
 Thus, we could infer that tester 1 and 2 are tracked, even tester 1 expresses Do Not Track in each HTTP requests. Thus, it can be concluded that Google text ad does not support Do Not Track yet.
 \begin{figure}
@@ -386,15 +465,23 @@ Thus, we could infer that tester 1 and 2 are tracked, even tester 1 expresses Do
 The value of this paper is not only the measurement itself, but also several limitations we discovered during our study. Some of these limitations are on the design of the Do Not Track concept; others are on the experiment methodology and implement. There is also a limitation of reality and context of the research study.
 
 \subsection{Do Not Show or Do Not Track}
-\todo{ruoyul: add the limitation of never really can test out server behavior}
 
-\subsection{Where is the Ad} \label{sec:complexity}
-\todo{ruoyul: add the limitation of cannot locate the ads}
+This limitation/issue exists for all studies that want to test any tool for limiting behavior advertising with any third-party entity. As stated in the DNT draft~\cite{dntdraft}, DNT requires the third-party to stop tracking by cease collection, retention, and use of all data related to the request and response. But this requirement is very hard to test in practice. 
 
-\subsection{Who is the tracker}
-\todo{ruoyul: add the limitation of cannot locate the tracker}
+Since most third-party company does not publish their method/algorithm regarding DNT or other tools, we can only make speculation of server’s actually behavior based on the content we are shown. For example, we may conclude that a website is compliant with the DNT protocol because they stopped showing us advertisement related to our browsing history after DNT is set to 1. However, without looking at the specific implementation of the server, we can never be sure what the server does when it sees a DNT header in the request. A server could simply keep tracking the user but instead not show the targeted ad to the user and keep the tracked browsing history data for later or other use. As a tester on the user’s end, we can not tell the difference between a server who stop collecting the data and a server who keeps collecting the data without showing the targeted ads. 
 
-\subsection{A Temporary Draft}
+
+\subsection{Complexity of the online advertising ecosystem} \label{sec:complexity}
+As discussed in Section~\ref{sec:dntheadertest}, the current state of advertising companies makes it hard to find out the exact websites that the advertising companies place their ad on to do any targeted test. Furthermore, the complexity of the overall Internet advertising ecosystem makes it hard to locate the tracker and do any test in isolate. 
+
+\subsection{Immaturity of DNT standard}
+The DNT proposal still need time and work to mature. At the current state, there no clear standard of the DNT specification and may websites behave differently when presented with a DNT HTTP header. This may change in a few years when the DNT specification is more extensive and the advertising industry agree on a standard way to handle DNT headers. The current DNT proposal present the following issues that hinders out test and also the implementation of servers that want to support DNT:
+
+1. The HTTP response with DNT echo:
+The 2011 March draft recommend the third party server comply by echoing a DNT header back in the HTTP response. This led us to do the experiment in Section~\ref{sec:dntheadertest}. However this recommendation is removed in all 4 subsequent publications of the specification~\cite{tracking_dnt20130430, tracking_dnt20121002, tracking_dnt20120313, tracking_dnt20111114} suggesting that the recommendation was not adopted. So there is definitely gaps between the most up to date DNT specification and the current implementation by the websites since the test we did in Section~\ref{sec:dntheadertest} shows that there are at least still a couple of websites/companies that still echo DNT:1 back. 
+
+2. DNT Tk header with TSV
+  All DNT specification following the March 2011 one talks about a Tracking Status Value(TSV) which represent the third-party server’s compliance. The TSV is supposedly sent through HTTP response with the header Tk. However, we did the tests similar to the one on Section~\ref{sec:dntheadertest} and have found that no server sent a HTTP response Tk header. This suggest the feature is still in draft stage and have not gained any support on servers. 
 
 
 \section{Conclusion} \label{sec:conclusion}
