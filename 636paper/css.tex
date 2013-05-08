@@ -491,7 +491,7 @@ Secondly, third-party trackers are not directly advertising placement providers.
 
 Thirdly, it is also practically unfeasible to identify a third-party tracker via its elements embedded in websites in a legitimate and scalable way. For well-known third-party trackers, such as the "Like" button of Facebook and "+1" button of Google Plus, we may able to clearly know they will collect user data for their own purpose. However, for those less well-known analytic companies, their tracking elements may not easy to identified. The URL of the element itself is not guaranteed to be the same as, or even similar to, the URL of company's website. Also, the cookie name included in its HTTP request is not guaranteed to relevant to the company's name either. The tacking element is also embedded in a particular website based on randomness. When we reproduce the experiment mentioned in Section~\ref{sec:dntheadertest}, we find that those tracking elements are not guaranteed to be embedded in the same web page.
 
-In general, the online advertising ecosystem is highly complicated related with real-time decision and randomness factor. This makes our experiment difficult to scale up.
+In general, the online advertising ecosystem is highly complicated related with real-time decision and randomness factor. This makes our experiment difficult to scale up, since there is not a good way to measure the tracking events in an isolated environment.
 
 \subsection{Immaturity of DNT standard}
 
