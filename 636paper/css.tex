@@ -138,7 +138,7 @@ In this section, we present our attempt on revealing the list of Do Not Track fr
 We firstly did not find any explicit list of websites, services and networks who support Do Not Track. As defined in draft~\cite{dntdraft}, a server which supports Do Not Track is recommended to echo a \verb|DNT: 1| HTTP header back to user when it receives HTTP request with a \verb|DNT: 1| header in the HTTP header field. We are advised to discover the DNT Friendly list by ourselves.
 
 \paragraph{Crawling gate websites}
-Thus we did a stepping-out experiment to collect websites who support Do Not Track. Our algorithm is presented in Algorithm~\ref{listdiscover} \todo{ylang: add a algorithm}. The basic idea is to send HTTP requests to all the target URLs. Here, our target URLs are the URLs of top 100,000 popular websites listed by Alexa~\cite{alexa}. For each requests, add regular HTTP headers such as \texttt{User-Agent}, \texttt{Accept-Encoding}, \texttt{Accept-Language}, etc. to simulate a real HTTP request send from browser. A \verb|DNT: 1| header will be added for each request. Send the request to the website and obtain the HTTP response. If the response status code is \verb|200 OK| and there is also a \verb|DNT: 1| header in the response header field, then we will regard this website is supporting Do Not Track.
+Thus we did a stepping-out experiment to collect websites who support Do Not Track. Our algorithm is presented in Algorithm~\ref{listdiscover}. The basic idea is to send HTTP requests to all the target URLs. Here, our target URLs are the URLs of top 100,000 popular websites listed by Alexa~\cite{alexa}. For each requests, add regular HTTP headers such as \texttt{User-Agent}, \texttt{Accept-Encoding}, \texttt{Accept-Language}, etc. to simulate a real HTTP request send from browser. A \verb|DNT: 1| header will be added for each request. Send the request to the website and obtain the HTTP response. If the response status code is \verb|200 OK| and there is also a \verb|DNT: 1| header in the response header field, then we will regard this website is supporting Do Not Track.
 
 
 \begin{algorithm}
@@ -205,14 +205,32 @@ Also, due to consideration on legal issues, web companies are advised to not inc
 
 \subsection{Partial List Provided by Public-tracking Team}
 
-After several failing attempted, we were advised to contact public-tracking team of W3C. The public-tracking team is currently working on building an agreement of Do Not Track. We are provided a partial list of DNT supporting web services. In this partial list, there are 20 network services. They can be divided into 5 groups:
-\begin{itemize}
-\item \textbf{analytic services}, such as adInsight
-\item \textbf{advertisement platform}, such as Chitika and AdOcean
-\item \textbf{data provider}, such as AdTruth and m6d
-\item \textbf{tag management}, such as BrightTag
-\item \textbf{social network}, such as Twitter
-\end{itemize}
+After several failing attempted, we were advised to contact public-tracking team of W3C. The public-tracking team is currently working on building an agreement of Do Not Track. We are provided a partial list of DNT supporting web services. In this partial list, there are 20 network services showed in Table \ref{table:dntlist}.
+
+\begin{table*}
+\footnotesize
+\begin{tabular}{ll}
+\toprule
+Business Type&Companies\\
+\midrule
+Analytics Service and Audience Measurement&AdInsight, Effective Measure, TruEffect\\ \hline
+\addlinespace
+Personalization Platform&3PMobile\\ \hline
+\addlinespace
+Advertising Platform and Network&AdOcean(Gemius), Chitika,\\& Jumptap, MediaMind, Mochi Media\\ \hline
+\addlinespace
+Data Provider&AdTruth, BlueCava, BlueKai, eXelate, m6d\\ \hline
+\addlinespace
+Content Provider&AP News Registry\\ \hline
+\addlinespace
+Tag Management&BrightTag, Ensighten, TagMan, Tealium\\ \hline
+\addlinespace
+Social Network&Twitter\\
+\bottomrule
+\end{tabular}
+\caption{Partial DNT friendly company list}
+\label{table:dntlist}
+\end{table*}
 
 We are very interested in those advertisement platforms since they are the major companies who benefited by online behavioral tracking and online behavioral advertising technology. To test on those advertisement platforms also keeps consistency with our original requirement and thought.
 
@@ -230,8 +248,6 @@ Although the partial list does not provided much valuable suggestions, the only 
 
 Twitter also kindly provided a preview page of tailored suggestion, which allows user to have a preview on the recommendation accounts suggests by tailored suggestion feature. The snapshot of the page is provided in Figure~\ref{fig:tailored}. This would be a much convenient way for our testers to detect results of tailored suggestions.
 
-Currently, Twitter does not implement this feature for profitable purpose, but they clearly states that they will do so in the future~\cite{twitterfaq}. They also indicate that they would not release these tracking data to any third party.
-
 \begin{figure}
 \begin{center}
 \includegraphics[width=0.9\columnwidth]{tailored}
@@ -239,6 +255,9 @@ Currently, Twitter does not implement this feature for profitable purpose, but t
 \caption{Screen shot of Twitter tailored suggestion preview block}
 \label{fig:tailored}
 \end{figure}
+
+
+Currently, Twitter does not implement this feature for profitable purpose, but they clearly states that they will do so in the future~\cite{twitterfaq}. They also indicate that they would not release these tracking data to any third party.
 
 \section{Experiment} \label{sec:experiment}
 
@@ -300,7 +319,7 @@ tester 4&&&&\checkmark\\
 \label{table:testaccount}
 \end{table*}
 
-We would train tester 1, 2, and 3 to browsing multiple websites on a specific topic. Specifically, we use Selinum 2 with Java to generate a browser automation program that search the topic on Google.com, click all the result links on first 10 pages. This is about 100 pages. We would assume a certain portion of these websites are in Twitter ecosystem. Then we wait for a period of time to allow server update its data, and then visit and take a screen shot of the Twitter tailored suggestion preview page. The algorithm is presented in Algorithm~\ref{dntexperiment}. \todo{ylang: make an algorithm}
+We would train tester 1, 2, and 3 to browsing multiple websites on a specific topic. Specifically, we use Selinum 2 with Java to generate a browser automation program that search the topic on Google.com, click all the result links on first 10 pages. This is about 100 pages. We would assume a certain portion of these websites are in Twitter ecosystem. Then we wait for a period of time to allow server update its data, and then visit and take a screen shot of the Twitter tailored suggestion preview page. The algorithm is presented in Algorithm~\ref{dntexperiment}.
 
 \begin{algorithm}
 \caption{Detect DNT friendly websites}\label{dntexperiment}
@@ -314,6 +333,7 @@ We would train tester 1, 2, and 3 to browsing multiple websites on a specific to
 \EndFor
 \State $\text{visit Twitter tailored suggestion preview page}$
 \State $\text{take a screen shot}$
+\State $\text{}$
 \end{algorithmic}
 \end{algorithm}
 
